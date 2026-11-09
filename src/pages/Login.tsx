@@ -34,7 +34,7 @@ export default function Login({ onDone }: { onDone: () => void }) {
         <div className="text-center">
           <div className="text-6xl mb-2">🧸</div>
           <h1 className="text-2xl font-extrabold">היומן של המשפחתון</h1>
-          <p className="text-muted text-sm mt-1">{step === 'email' ? 'כניסה עם קוד חד-פעמי במייל' : `שלחנו קוד ל-${email}`}</p>
+          <p className="text-muted text-sm mt-1">{step === 'email' ? 'כניסה עם קוד חד-פעמי במייל' : `שלחנו מייל ל-${email}. אפשר ללחוץ על הקישור שבמייל, או להקליד כאן את הקוד אם הוא מופיע במייל.`}</p>
         </div>
         {step === 'email' ? (
           <input className="input text-center" type="email" dir="ltr" autoFocus required placeholder="email@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />

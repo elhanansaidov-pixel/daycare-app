@@ -4,7 +4,7 @@ export type Role = 'caregiver' | 'parent';
 
 export async function sendCode(email: string) {
   if (!supabase) throw new Error('no cloud');
-  const { error } = await supabase.auth.signInWithOtp({ email: email.trim().toLowerCase(), options: { shouldCreateUser: true } });
+  const { error } = await supabase.auth.signInWithOtp({ email: email.trim().toLowerCase(), options: { shouldCreateUser: true, emailRedirectTo: location.origin + location.pathname } });
   if (error) throw error;
 }
 
