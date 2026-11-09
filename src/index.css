@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 255 248 241;
+  --card: 255 255 255;
+  --sunk: 248 240 232;
+  --ink: 47 38 34;
+  --muted: 128 114 106;
+  --line: 236 224 213;
+  --brand: 233 128 102;
+  --brandink: 255 255 255;
+  --danger: 220 76 70;
+  --ok: 56 161 105;
+  --warn: 222 150 30;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: 27 23 22;
+    --card: 39 34 32;
+    --sunk: 33 29 27;
+    --ink: 245 238 232;
+    --muted: 172 160 152;
+    --line: 62 55 51;
+    --brand: 240 145 118;
+    --brandink: 30 20 16;
+    --danger: 240 110 100;
+    --ok: 96 196 138;
+    --warn: 240 180 80;
+    color-scheme: dark;
+  }
+}
+
+html, body, #root { min-height: 100%; }
+body {
+  @apply bg-bg text-ink font-sans antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: contain;
+}
+button { touch-action: manipulation; }
+
+@layer components {
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-2xl px-4 min-h-[48px] font-semibold transition active:scale-[.97] disabled:opacity-50; }
+  .btn-primary { @apply btn bg-brand text-brandink shadow-soft; }
+  .btn-ghost { @apply btn bg-sunk text-ink; }
+  .btn-danger { @apply btn bg-danger/10 text-danger; }
+  .chip { @apply inline-flex items-center gap-1 rounded-full px-3 min-h-[40px] text-sm font-medium bg-sunk border border-transparent transition active:scale-95; }
+  .chip-on { @apply bg-brand/15 border-brand text-ink; }
+  .card { @apply bg-card rounded-3xl shadow-soft; }
+  .input { @apply w-full rounded-2xl bg-sunk border border-line px-4 min-h-[48px] text-base outline-none focus:border-brand; }
+  .label { @apply block text-sm font-medium text-muted mb-1.5; }
+  .safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 0.5rem); }
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+@keyframes pop { 0% { transform: scale(.9); opacity: 0 } 100% { transform: scale(1); opacity: 1 } }
+@keyframes up { 0% { transform: translateY(100%) } 100% { transform: translateY(0) } }
+@keyframes fade { 0% { opacity: 0 } 100% { opacity: 1 } }
+@keyframes pulse-soft { 0%,100% { opacity: 1 } 50% { opacity: .55 } }
+.anim-pop { animation: pop .18s ease-out; }
+.anim-up { animation: up .22s cubic-bezier(.2,.8,.2,1); }
+.anim-fade { animation: fade .18s ease-out; }
+.anim-pulse { animation: pulse-soft 2s ease-in-out infinite; }
