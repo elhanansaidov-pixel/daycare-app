@@ -15,7 +15,7 @@ import Login from './pages/Login';
 import { supabase } from './lib/supabase';
 import { createLocalStore } from './lib/localStore';
 import { createSupabaseStore } from './lib/supabaseStore';
-import { getRole, type Role } from './lib/auth';
+import { getRole, redeemInvite, setPendingInvite, takePendingInvite, type Role } from './lib/auth';
 import { useReminderTicker } from './hooks/useAlerts';
 
 function ReminderRunner() {
@@ -52,7 +52,19 @@ function Splash() {
   );
 }
 
+// Invite links look like  …/#/join/<code>. Remember the code across the Google redirect.
+let invitedOnLoad = false;
+{
+  const m = location.hash.match(/^#\/join\/([\w-]+)/);
+  if (m) {
+    setPendingInvite(m[1]);
+    invitedOnLoad = true;
+    history.replaceState(null, '', location.pathname + location.search + '#/');
+  }
+}
+
 function CloudApp() {
+  const toast = useToast();
   const [session, setSession] = useState<Session | null | undefined>(undefined);
   const [role, setRole] = useState<Role | null>(null);
   const store = useMemo(() => createSupabaseStore(supabase!), []);
@@ -63,12 +75,28 @@ function CloudApp() {
     return () => data.subscription.unsubscribe();
   }, []);
   useEffect(() => {
-    if (session) getRole().then(setRole);
-    else setRole(null);
+    if (!session) {
+      setRole(null);
+      return;
+    }
+    (async () => {
+      const r = await getRole();
+      const code = takePendingInvite();
+      if (code && r === 'parent') {
+        try {
+          const name = await redeemInvite(code);
+          if (name) toast({ text: `התחברתם ליומן של ${name} 🎉`, icon: '💛' });
+          else toast({ text: 'קישור ההזמנה לא תקין או שהוחלף. בקשו מהמטפלת קישור חדש.', tone: 'error' });
+        } catch (e) {
+          toast({ text: 'שגיאה בהצטרפות: ' + (e as Error).message, tone: 'error' });
+        }
+      }
+      setRole(r);
+    })();
   }, [session?.user.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (session === undefined) return <Splash />;
-  if (!session) return <Login onDone={() => undefined} />;
+  if (!session) return <Login invited={invitedOnLoad} />;
   if (!role) return <Splash />;
   return (
     <DataProvider store={store} readOnly={role === 'parent'}>

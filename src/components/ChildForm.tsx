@@ -4,6 +4,7 @@ import { useData } from '../hooks/useData';
 import { useToast } from './Toast';
 import { CHILD_COLORS, CHILD_EMOJIS, telLink, uid, waLink } from '../lib/util';
 import { Field, Chips } from './EventSheet';
+import { inviteLink, rotateInvite } from '../lib/auth';
 
 export function blankChild(sort: number): Child {
   return {
@@ -139,11 +140,54 @@ export default function ChildForm({ initial, onSaved }: { initial: Child; onSave
 
       <section className="card p-4 space-y-3">
         <h3 className="font-bold text-lg">👨‍👩‍👧 הורים ואנשי קשר</h3>
+        {store.mode === 'cloud' && c.invite_code && (
+          <div className="rounded-2xl bg-brand/10 p-3 space-y-2">
+            <p className="text-sm">
+              <b>הזמנת הורה לפורטל:</b> שלחו להורה את הקישור. אחרי שיתחבר עם Google הוא יצורף ל{c.name} אוטומטית ויופיע כאן ברשימה.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <a
+                className="btn bg-[#25D366] text-white flex-1 min-w-[10rem]"
+                target="_blank"
+                rel="noreferrer"
+                href={`https://wa.me/?text=${encodeURIComponent(
+                  `היי! 💛\nכאן אפשר לראות בכל רגע את היומן והתמונות של ${c.name} מהמשפחתון:\n${inviteLink(c.invite_code)}\n\nנכנסים עם חשבון Google, וזהו.`,
+                )}`}
+              >
+                📨 שליחת הזמנה בוואטסאפ
+              </a>
+              <button
+                className="btn-ghost"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(inviteLink(c.invite_code!));
+                  toast({ text: 'הקישור הועתק', icon: '📋' });
+                }}
+              >
+                📋 העתקה
+              </button>
+              <button
+                className="btn-ghost"
+                onClick={async () => {
+                  if (!confirm('ליצור קישור חדש? הקישור הקודם יפסיק לעבוד. הורים שכבר הצטרפו יישארו מחוברים.')) return;
+                  try {
+                    const nc = await rotateInvite(c.id);
+                    set({ invite_code: nc });
+                    toast({ text: 'נוצר קישור חדש', icon: '🔄' });
+                  } catch (e) {
+                    toast({ text: 'שגיאה: ' + (e as Error).message, tone: 'error' });
+                  }
+                }}
+              >
+                🔄 קישור חדש
+              </button>
+            </div>
+          </div>
+        )}
         {mine.map((g) => (
           <GuardianRow key={g.id} g={g} />
         ))}
         <GuardianRow key={'new-' + mine.length} g={{ id: '', child_id: c.id, name: '', relation: mine.length ? 'אבא' : 'אמא', phone: '', email: '' }} />
-        <p className="text-xs text-muted">המייל משמש לכניסה לפורטל ההורים. הורה יראה רק את הילדים שהמייל שלו רשום אצלם.</p>
+        <p className="text-xs text-muted">ההורה נכנס לפורטל עם חשבון ה-Google שמופיע כאן, ורואה רק את הילדים שהוא רשום אצלם. כדי להסיר גישה, מוחקים את ההורה מהרשימה.</p>
       </section>
 
       <button

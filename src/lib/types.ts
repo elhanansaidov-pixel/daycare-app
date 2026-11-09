@@ -14,6 +14,7 @@ export interface Child {
   feed_alert_min: number;
   active: boolean;
   sort: number;
+  invite_code?: string;
 }
 
 export interface Guardian {

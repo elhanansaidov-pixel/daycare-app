@@ -27,7 +27,7 @@ export default function ParentPortal({ preview }: { preview?: boolean }) {
         <div className="card p-8 max-w-sm">
           <p className="text-5xl mb-3">🔒</p>
           <p className="font-bold text-lg">לא נמצאו ילדים המשויכים למייל הזה</p>
-          <p className="text-muted text-sm mt-2">בקשו מהמטפלת להוסיף את המייל שלכם בכרטיס הילד.</p>
+          <p className="text-muted text-sm mt-2">בקשו מהמטפלת לשלוח לכם את קישור ההזמנה של הילד/ה, ולחצו עליו.</p>
           <button className="btn-ghost mt-4" onClick={() => signOut().then(() => location.reload())}>
             יציאה
           </button>
