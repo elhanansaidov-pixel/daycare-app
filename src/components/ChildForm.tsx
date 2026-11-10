@@ -6,8 +6,9 @@ import { CHILD_COLORS, CHILD_EMOJIS, telLink, uid, waLink } from '../lib/util';
 import { Field, Chips } from './EventSheet';
 import { inviteLink, rotateInvite } from '../lib/auth';
 import Avatar from './Avatar';
-import AvatarCropper from './AvatarCropper';
-import { Camera, X } from 'lucide-react';
+import AvatarEditor from './AvatarEditor';
+import { emojiOf } from '../lib/look';
+import { Sparkles } from 'lucide-react';
 
 export function blankChild(sort: number): Child {
   return {
@@ -28,11 +29,11 @@ export function blankChild(sort: number): Child {
 }
 
 export default function ChildForm({ initial, onSaved }: { initial: Child; onSaved?: (c: Child) => void }) {
-  const { store, guardians } = useData();
+  const { store, guardians, allChildren } = useData();
   const toast = useToast();
   const [c, setC] = useState(initial);
   const [busy, setBusy] = useState(false);
-  const [cropFile, setCropFile] = useState<File | null>(null);
+  const [editLook, setEditLook] = useState(false);
   useEffect(() => setC(initial), [initial]);
   const set = (p: Partial<Child>) => setC((x) => ({ ...x, ...p }));
   const mine = guardians.filter((g) => g.child_id === c.id);
@@ -73,36 +74,14 @@ export default function ChildForm({ initial, onSaved }: { initial: Child; onSave
             <input type="date" className="input" value={c.birth_date ?? ''} onChange={(e) => set({ birth_date: e.target.value || null })} />
           </Field>
         </div>
-        <Field label="תמונת פנים">
-          <div className="flex items-center gap-3">
-            <Avatar child={c} size={64} />
-            <label className="btn-ghost !min-h-[44px] cursor-pointer">
-              <Camera size={18} /> {c.avatar ? 'החלפת תמונה' : 'הוספת תמונה'}
-              <input
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={(e) => {
-                  setCropFile(e.target.files?.[0] ?? null);
-                  e.target.value = '';
-                }}
-              />
-            </label>
-            {c.avatar && (
-              <button type="button" className="icon-btn" onClick={() => set({ avatar: null })} aria-label="הסרת התמונה">
-                <X size={18} />
-              </button>
-            )}
-          </div>
-          <p className="text-xs text-muted mt-1.5">אחרי הבחירה ממקמים את הפנים בתוך העיגול. צריך ללחוץ ״שמירה״ בסוף.</p>
-        </Field>
-        <Field label={c.avatar ? 'דמות (כשאין תמונה)' : 'דמות'}>
-          <div className="flex flex-wrap gap-1.5">
-            {CHILD_EMOJIS.map((em) => (
-              <button key={em} type="button" className={`h-11 w-11 rounded-2xl text-2xl ${c.emoji === em ? 'bg-brand/20 ring-2 ring-brand' : 'bg-sunk'}`} onClick={() => set({ emoji: em })}>
-                {em}
-              </button>
-            ))}
+        <Field label="דמות">
+          <div className="flex items-center gap-4">
+            <button type="button" onClick={() => setEditLook(true)} className="transition active:scale-95" aria-label="עריכת דמות">
+              <Avatar child={c} size={76} />
+            </button>
+            <button type="button" className="btn-ghost !min-h-[44px]" onClick={() => setEditLook(true)}>
+              <Sparkles size={18} className="text-brand" /> עריכת דמות
+            </button>
           </div>
         </Field>
         <Field label="צבע">
@@ -228,7 +207,26 @@ export default function ChildForm({ initial, onSaved }: { initial: Child; onSave
       >
         {c.active ? '📦 העברה לארכיון (סיים במשפחתון)' : '↩️ החזרה מהארכיון'}
       </button>
-      <AvatarCropper file={cropFile} onClose={() => setCropFile(null)} onDone={(url) => (set({ avatar: url }), setCropFile(null))} />
+      <AvatarEditor
+        child={c}
+        open={editLook}
+        onClose={() => setEditLook(false)}
+        onSave={async (look) => {
+          const patch = { look, emoji: emojiOf(look.animal) };
+          set(patch);
+          const saved = allChildren.find((x) => x.id === c.id);
+          if (saved) {
+            try {
+              await store.saveChild({ ...saved, ...patch });
+              toast({ text: 'הדמות נשמרה', icon: '✓' });
+            } catch (e) {
+              toast({ text: 'שגיאה: ' + (e as Error).message, tone: 'error' });
+              return;
+            }
+          }
+          setEditLook(false);
+        }}
+      />
     </div>
   );
 }

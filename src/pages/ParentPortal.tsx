@@ -6,7 +6,7 @@ import Avatar from '../components/Avatar';
 import Timeline from '../components/Timeline';
 import DayNav from '../components/DayNav';
 import { PhotoGrid } from './Gallery';
-import { ageLabel, childWord, clockDuration, durationLabel, lastOf, openSleep, presence } from '../lib/util';
+import { ageLabel, avatarState, childWord, clockDuration, durationLabel, lastOf, openSleep, presence } from '../lib/util';
 import { signOut } from '../lib/auth';
 import { Bubble } from '../components/Icon';
 import { Wordmark } from '../components/Logo';
@@ -75,7 +75,7 @@ export default function ParentPortal({ preview }: { preview?: boolean }) {
         )}
         {child && (
           <div className="flex items-center gap-4 mt-5 anim-pop" key={child.id}>
-            <Avatar child={child} size={84} />
+            <Avatar child={child} size={92} state={isToday(day) ? avatarState(ev, now) : 'idle'} />
             <div>
               <h1 className="text-3xl font-extrabold tracking-tight">{child.name}</h1>
               <p className="text-muted">{ageLabel(child.birth_date)}</p>

@@ -8,7 +8,7 @@ import DayNav from '../components/DayNav';
 import EventSheet from '../components/EventSheet';
 import PhotoSheet from '../components/PhotoSheet';
 import ChildForm from '../components/ChildForm';
-import { ageLabel, telLink, waLink } from '../lib/util';
+import { ageLabel, avatarState, telLink, waLink } from '../lib/util';
 import { buildSummary } from '../lib/summary';
 import type { EventType } from '../lib/types';
 import type { IconKey } from '../lib/util';
@@ -36,7 +36,7 @@ export default function ChildPage() {
           <ArrowRight size={20} />
         </Link>
         <div className="flex items-center gap-4 mt-3">
-          <Avatar child={child} size={80} />
+          <Avatar child={child} size={88} state={isToday(day) ? avatarState(evs) : 'idle'} />
           <div className="flex-1 min-w-0">
             <h1 className="text-3xl font-extrabold tracking-tight">{child.name}</h1>
             <p className="text-muted">{ageLabel(child.birth_date) || 'הוסיפו תאריך לידה בכרטיס'}</p>

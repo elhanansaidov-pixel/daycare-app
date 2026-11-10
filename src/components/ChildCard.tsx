@@ -3,7 +3,7 @@ import { AlarmClock, Camera, Check, House, Plus, TriangleAlert } from 'lucide-re
 import type { Child, DayEvent } from '../lib/types';
 import Avatar from './Avatar';
 import { EvIcon } from './Icon';
-import { ageLabel, clockDuration, durationLabel, lastOf, openSleep, presence, childWord, hhmm, type IconKey } from '../lib/util';
+import { avatarState, ageLabel, clockDuration, durationLabel, lastOf, openSleep, presence, childWord, hhmm, type IconKey } from '../lib/util';
 import { useNow } from '../hooks/useData';
 import { useActions } from '../hooks/useActions';
 
@@ -55,7 +55,7 @@ export default function ChildCard({
           </div>
         )}
         <Link to={`/child/${child.id}`} className="flex items-center gap-3 flex-1 min-w-0" onClick={(e) => selectMode && e.preventDefault()}>
-          <Avatar child={child} size={54} />
+          <Avatar child={child} size={58} state={avatarState(events, now)} />
           <div className="min-w-0">
             <h3 className="text-xl font-bold leading-tight truncate">{child.name}</h3>
             <p className="text-sm text-muted">{ageLabel(child.birth_date) || (child.gender === 'girl' ? 'בת' : 'בן')}</p>

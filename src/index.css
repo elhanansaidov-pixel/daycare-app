@@ -142,3 +142,15 @@ button { touch-action: manipulation; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* ---------- אווטארים מצוירים ---------- */
+.av-eye { transform-box: fill-box; transform-origin: center; animation: av-blink var(--blink-dur, 5s) infinite; animation-delay: var(--blink-delay, 0s); }
+@keyframes av-blink { 0%, 93%, 100% { transform: scaleY(1) } 96% { transform: scaleY(.08) } }
+.av-z { opacity: 0; transform-box: fill-box; animation: av-z 2.4s ease-in-out infinite; }
+@keyframes av-z { 0% { opacity: 0; transform: translate(-3px, 5px) scale(.6) } 30% { opacity: 1 } 100% { opacity: 0; transform: translate(4px, -8px) scale(1.1) } }
+.av-hand { transform-box: fill-box; transform-origin: 50% 100%; animation: av-wave 1.1s ease-in-out infinite; }
+@keyframes av-wave { 0%, 100% { transform: rotate(-16deg) } 50% { transform: rotate(18deg) } }
+.av-doze { transform-origin: 60px 110px; animation: av-doze 3.2s ease-in-out infinite; }
+@keyframes av-doze { 0%, 100% { transform: rotate(0) } 50% { transform: rotate(-4deg) translateY(1px) } }
+.av-static * { animation: none !important; }
+.av-static .av-z { opacity: 1; }

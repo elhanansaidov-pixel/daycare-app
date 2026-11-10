@@ -154,3 +154,11 @@ export async function compressImage(file: Blob, max = 1280, quality = 0.8): Prom
   canvas.getContext('2d')!.drawImage(bmp, 0, 0, w, h);
   return new Promise((res) => canvas.toBlob((b) => res(b ?? file), 'image/jpeg', quality));
 }
+
+/** Live state for the cartoon avatar: asleep, just arrived (waves for 10 min), or idle. */
+export function avatarState(events: DayEvent[], now = Date.now()): 'idle' | 'sleep' | 'wave' {
+  if (openSleep(events)) return 'sleep';
+  const att = events.filter((e) => e.type === 'attendance').sort((a, b) => b.started_at.localeCompare(a.started_at))[0];
+  if (att?.subtype === 'arrive' && now - new Date(att.started_at).getTime() < 10 * 60_000) return 'wave';
+  return 'idle';
+}

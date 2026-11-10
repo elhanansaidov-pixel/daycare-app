@@ -1,3 +1,5 @@
+import type { Look } from './look';
+
 export type Gender = 'boy' | 'girl';
 
 export interface Child {
@@ -15,7 +17,7 @@ export interface Child {
   active: boolean;
   sort: number;
   invite_code?: string;
-  avatar?: string | null; // small square JPEG data URL (face crop)
+  look?: Partial<Look> | null; // cartoon avatar description
 }
 
 export interface Guardian {
