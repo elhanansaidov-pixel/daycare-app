@@ -5,6 +5,9 @@ import { useToast } from './Toast';
 import { CHILD_COLORS, CHILD_EMOJIS, telLink, uid, waLink } from '../lib/util';
 import { Field, Chips } from './EventSheet';
 import { inviteLink, rotateInvite } from '../lib/auth';
+import Avatar from './Avatar';
+import AvatarCropper from './AvatarCropper';
+import { Camera, X } from 'lucide-react';
 
 export function blankChild(sort: number): Child {
   return {
@@ -29,6 +32,7 @@ export default function ChildForm({ initial, onSaved }: { initial: Child; onSave
   const toast = useToast();
   const [c, setC] = useState(initial);
   const [busy, setBusy] = useState(false);
+  const [cropFile, setCropFile] = useState<File | null>(null);
   useEffect(() => setC(initial), [initial]);
   const set = (p: Partial<Child>) => setC((x) => ({ ...x, ...p }));
   const mine = guardians.filter((g) => g.child_id === c.id);
@@ -38,7 +42,7 @@ export default function ChildForm({ initial, onSaved }: { initial: Child; onSave
     setBusy(true);
     try {
       const saved = await store.saveChild({ ...c, name: c.name.trim() });
-      toast({ text: 'נשמר', icon: '✅' });
+      toast({ text: 'נשמר', icon: '✓' });
       onSaved?.(saved);
     } catch (e) {
       toast({ text: 'שגיאה: ' + (e as Error).message, tone: 'error' });
@@ -58,8 +62,8 @@ export default function ChildForm({ initial, onSaved }: { initial: Child; onSave
           <Field label="מין">
             <Chips
               options={[
-                { key: 'boy', label: '👦 בן' },
-                { key: 'girl', label: '👧 בת' },
+                { key: 'boy', label: 'בן' },
+                { key: 'girl', label: 'בת' },
               ]}
               value={c.gender}
               onChange={(v) => v && set({ gender: v as Child['gender'] })}
@@ -69,7 +73,30 @@ export default function ChildForm({ initial, onSaved }: { initial: Child; onSave
             <input type="date" className="input" value={c.birth_date ?? ''} onChange={(e) => set({ birth_date: e.target.value || null })} />
           </Field>
         </div>
-        <Field label="דמות">
+        <Field label="תמונת פנים">
+          <div className="flex items-center gap-3">
+            <Avatar child={c} size={64} />
+            <label className="btn-ghost !min-h-[44px] cursor-pointer">
+              <Camera size={18} /> {c.avatar ? 'החלפת תמונה' : 'הוספת תמונה'}
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={(e) => {
+                  setCropFile(e.target.files?.[0] ?? null);
+                  e.target.value = '';
+                }}
+              />
+            </label>
+            {c.avatar && (
+              <button type="button" className="icon-btn" onClick={() => set({ avatar: null })} aria-label="הסרת התמונה">
+                <X size={18} />
+              </button>
+            )}
+          </div>
+          <p className="text-xs text-muted mt-1.5">אחרי הבחירה ממקמים את הפנים בתוך העיגול. צריך ללחוץ ״שמירה״ בסוף.</p>
+        </Field>
+        <Field label={c.avatar ? 'דמות (כשאין תמונה)' : 'דמות'}>
           <div className="flex flex-wrap gap-1.5">
             {CHILD_EMOJIS.map((em) => (
               <button key={em} type="button" className={`h-11 w-11 rounded-2xl text-2xl ${c.emoji === em ? 'bg-brand/20 ring-2 ring-brand' : 'bg-sunk'}`} onClick={() => set({ emoji: em })}>
@@ -96,13 +123,13 @@ export default function ChildForm({ initial, onSaved }: { initial: Child; onSave
 
       <section className="card p-4 space-y-4">
         <h3 className="font-bold text-lg">בריאות והערות</h3>
-        <Field label="⚠️ אלרגיות">
+        <Field label="אלרגיות">
           <input className="input" placeholder="למשל: בוטנים, חלב" value={c.allergies} onChange={(e) => set({ allergies: e.target.value })} />
         </Field>
-        <Field label="💊 תרופות">
+        <Field label="תרופות">
           <input className="input" placeholder="שם התרופה, מינון ושעות" value={c.medications} onChange={(e) => set({ medications: e.target.value })} />
         </Field>
-        <Field label="📌 הערות קבועות">
+        <Field label="הערות קבועות">
           <textarea className="input min-h-[90px] py-3" placeholder="הרגלי שינה, מוצץ, דברים שמרגיעים..." value={c.notes} onChange={(e) => set({ notes: e.target.value })} />
         </Field>
       </section>
@@ -201,6 +228,7 @@ export default function ChildForm({ initial, onSaved }: { initial: Child; onSave
       >
         {c.active ? '📦 העברה לארכיון (סיים במשפחתון)' : '↩️ החזרה מהארכיון'}
       </button>
+      <AvatarCropper file={cropFile} onClose={() => setCropFile(null)} onDone={(url) => (set({ avatar: url }), setCropFile(null))} />
     </div>
   );
 }

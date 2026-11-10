@@ -10,9 +10,12 @@ import EventSheet from '../components/EventSheet';
 import PhotoSheet from '../components/PhotoSheet';
 import Timeline from '../components/Timeline';
 import Avatar from '../components/Avatar';
-import { PageHeader } from '../components/Layout';
+import { Wordmark } from '../components/Logo';
+import { Bubble } from '../components/Icon';
+import { APP_NAME } from '../lib/brand';
+import { AlarmClock, Baby, Columns3, LayoutGrid, ListChecks } from 'lucide-react';
 import type { Child, EventType } from '../lib/types';
-import { presence } from '../lib/util';
+import { presence, type IconKey } from '../lib/util';
 
 function greeting() {
   const h = new Date().getHours();
@@ -53,29 +56,26 @@ export default function Dashboard() {
 
   return (
     <>
-      <PageHeader
-        sub={`${format(new Date(), 'EEEE, d בMMMM', { locale: he })}`}
-        title={
-          <>
-            {greeting()}
-            {settings.caregiver_name ? `, ${settings.caregiver_name}` : ''} ☀️
-          </>
-        }
-      >
-        <div className="text-center rounded-2xl bg-ok/10 px-3 py-1.5 shrink-0">
-          <p className="text-2xl font-extrabold text-ok leading-none tabular-nums">
-            {presentCount}/{children.length}
-          </p>
-          <p className="text-[11px] text-muted">נמצאים</p>
+      <header className="max-w-6xl mx-auto px-4 pt-5 pb-4">
+        <Wordmark name={APP_NAME} size={34} />
+        <div className="mt-5 flex items-end justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-muted text-sm font-medium">{format(new Date(), 'EEEE, d בMMMM', { locale: he })}</p>
+            <h1 className="text-[28px] font-extrabold leading-tight tracking-tight">
+              {greeting()}
+              {settings.caregiver_name ? `, ${settings.caregiver_name}` : ''}
+            </h1>
+          </div>
+          <PresenceRing n={presentCount} total={children.length} />
         </div>
-      </PageHeader>
+      </header>
 
       <div className="max-w-6xl mx-auto px-4 space-y-3">
         {overdue.length > 0 && (
           <div className="rounded-3xl bg-danger/10 border border-danger/20 p-3 space-y-1 anim-pop">
             {overdue.map((o) => (
               <p key={o.child.id + o.kind} className="text-danger font-medium text-sm flex items-center gap-2">
-                <span>{o.kind === 'diaper' ? '🧷' : '🍼'}</span>
+                <AlarmClock size={16} className="shrink-0" />
                 {o.text}
               </p>
             ))}
@@ -83,10 +83,11 @@ export default function Dashboard() {
         )}
 
         <div className="flex items-center gap-2">
-          <div className="flex rounded-2xl bg-sunk p-1 text-sm font-semibold">
+          <div className="segmented">
             {(['cards', 'columns'] as const).map((v) => (
-              <button key={v} className={`px-3 h-9 rounded-xl ${view === v ? 'bg-card shadow-soft' : 'text-muted'}`} onClick={() => setViewP(v)}>
-                {v === 'cards' ? '▦ כרטיסים' : '▥ עמודות'}
+              <button key={v} className={`segmented-item !h-9 ${view === v ? 'on' : ''}`} onClick={() => setViewP(v)}>
+                {v === 'cards' ? <LayoutGrid size={16} /> : <Columns3 size={16} />}
+                {v === 'cards' ? 'כרטיסים' : 'עמודות'}
               </button>
             ))}
           </div>
@@ -95,13 +96,13 @@ export default function Dashboard() {
             className={`chip ${selectMode ? 'chip-on' : ''}`}
             onClick={() => (selectMode ? exitSelect() : setSelectMode(true))}
           >
-            {selectMode ? 'סיום בחירה' : '☑️ כמה ילדים יחד'}
+            {selectMode ? 'סיום בחירה' : <><ListChecks size={16} /> כמה ילדים יחד</>}
           </button>
         </div>
 
         {!loading && children.length === 0 && (
           <div className="card p-8 text-center">
-            <p className="text-4xl mb-2">👶</p>
+            <span className="inline-grid place-items-center h-16 w-16 rounded-full bg-brandsoft text-brand mb-3"><Baby size={30} /></span>
             <p className="font-semibold mb-4">עוד אין ילדים במשפחתון</p>
             <Link to="/settings" className="btn-primary">
               הוספת ילד
@@ -111,8 +112,9 @@ export default function Dashboard() {
 
         {view === 'cards' || selectMode ? (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {children.map((c) => (
+            {children.map((c, i) => (
               <ChildCard
+                index={i}
                 key={c.id}
                 child={c}
                 events={byChild.get(c.id) ?? []}
@@ -128,23 +130,25 @@ export default function Dashboard() {
         ) : (
           <div className="-mx-4 px-4 flex gap-3 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2">
             {children.map((c) => (
-              <section key={c.id} className="card snap-start shrink-0 w-[82vw] sm:w-72 flex flex-col max-h-[calc(100vh-15rem)]">
-                <Link to={`/child/${c.id}`} className="flex items-center gap-2 p-3 border-b border-line" style={{ borderTop: `6px solid ${c.color}`, borderRadius: '1.5rem 1.5rem 0 0' }}>
+              <section key={c.id} className="card overflow-hidden snap-start shrink-0 w-[82vw] sm:w-72 flex flex-col max-h-[calc(100vh-15rem)]">
+                <Link to={`/child/${c.id}`} className="flex items-center gap-2 p-3 border-b border-line" style={{ background: `linear-gradient(to bottom, ${c.color}2E, transparent)` }}>
                   <Avatar child={c} size={40} />
                   <h3 className="font-bold text-lg flex-1">{c.name}</h3>
-                  <span className={`text-xs font-semibold rounded-full px-2 py-1 ${presence(byChild.get(c.id) ?? []) === 'in' ? 'bg-ok/15 text-ok' : 'bg-sunk text-muted'}`}>
+                  <span className={presence(byChild.get(c.id) ?? []) === 'in' ? 'badge-ok' : 'badge-muted'}>
                     {presence(byChild.get(c.id) ?? []) === 'in' ? (c.gender === 'girl' ? 'נמצאת' : 'נמצא') : 'לא כאן'}
                   </span>
                 </Link>
                 <div className="grid grid-cols-4 gap-1 p-2">
-                  {[
-                    ['💧', () => act.diaper([c], 'pee')],
-                    ['💩', () => act.diaper([c], 'poop')],
-                    ['🍼', () => setSheet({ type: 'feed', kids: [c] })],
-                    ['😴', () => act.sleep([c])],
-                  ].map(([icon, fn]) => (
-                    <button key={icon as string} className="rounded-xl bg-sunk h-11 text-xl active:scale-90" onClick={fn as () => void}>
-                      {icon as string}
+                  {(
+                    [
+                      ['pee', () => act.diaper([c], 'pee')],
+                      ['poop', () => act.diaper([c], 'poop')],
+                      ['bottle', () => setSheet({ type: 'feed', kids: [c] })],
+                      ['sleep', () => act.sleep([c])],
+                    ] as [IconKey, () => void][]
+                  ).map(([k, fn]) => (
+                    <button key={k} className="tile !min-h-[44px]" onClick={fn}>
+                      <Bubble k={k} size={32} />
                     </button>
                   ))}
                 </div>
@@ -171,19 +175,19 @@ export default function Dashboard() {
             <div className="grid grid-cols-4 sm:grid-cols-8 gap-1.5">
               {(
                 [
-                  ['👋', 'הגעה', () => act.attendance(selKids, 'arrive')],
-                  ['🏠', 'איסוף', () => act.attendance(selKids, 'leave')],
-                  ['💧', 'פיפי', () => act.diaper(selKids, 'pee')],
-                  ['💩', 'קקי', () => act.diaper(selKids, 'poop')],
-                  ['🍲', 'אוכל', () => setSheet({ type: 'feed', kids: selKids })],
-                  ['😴', 'שינה', () => act.sleep(selKids)],
-                  ['📝', 'הערה', () => setSheet({ type: 'note', kids: selKids })],
-                  ['📷', 'תמונה', () => setPhotoFor(selected)],
-                ] as [string, string, () => void][]
-              ).map(([icon, label, fn]) => (
-                <button key={label} disabled={!selected.length} className="flex flex-col items-center rounded-2xl bg-sunk py-2 disabled:opacity-40 active:scale-90" onClick={fn}>
-                  <span className="text-xl">{icon}</span>
-                  <span className="text-[11px] text-muted">{label}</span>
+                  ['arrive', 'הגעה', () => act.attendance(selKids, 'arrive')],
+                  ['leave', 'איסוף', () => act.attendance(selKids, 'leave')],
+                  ['pee', 'פיפי', () => act.diaper(selKids, 'pee')],
+                  ['poop', 'קקי', () => act.diaper(selKids, 'poop')],
+                  ['meal', 'אוכל', () => setSheet({ type: 'feed', kids: selKids })],
+                  ['sleep', 'שינה', () => act.sleep(selKids)],
+                  ['note', 'הערה', () => setSheet({ type: 'note', kids: selKids })],
+                  ['photo', 'תמונה', () => setPhotoFor(selected)],
+                ] as [IconKey, string, () => void][]
+              ).map(([k, label, fn]) => (
+                <button key={label} disabled={!selected.length} className="tile !min-h-[60px]" onClick={fn}>
+                  <Bubble k={k} size={30} />
+                  <span className="tile-label">{label}</span>
                 </button>
               ))}
             </div>
@@ -194,5 +198,39 @@ export default function Dashboard() {
       <EventSheet open={!!sheet} onClose={() => setSheet(null)} kids={sheet?.kids ?? []} type={sheet?.type ?? 'feed'} />
       <PhotoSheet open={!!photoFor} onClose={() => setPhotoFor(null)} preselect={photoFor ?? []} />
     </>
+  );
+}
+
+function PresenceRing({ n, total }: { n: number; total: number }) {
+  const r = 26;
+  const c = 2 * Math.PI * r;
+  const pct = total ? n / total : 0;
+  return (
+    <div className="relative h-[68px] w-[68px] shrink-0" title="ילדים שנמצאים עכשיו">
+      <svg viewBox="0 0 64 64" className="h-full w-full -rotate-90">
+        <circle cx="32" cy="32" r={r} fill="none" stroke="rgb(var(--ok) / .15)" strokeWidth="6" />
+        <circle
+          cx="32"
+          cy="32"
+          r={r}
+          fill="none"
+          stroke="rgb(var(--ok))"
+          strokeWidth="6"
+          strokeLinecap="round"
+          strokeDasharray={c}
+          strokeDashoffset={c * (1 - pct)}
+          style={{ transition: 'stroke-dashoffset .6s cubic-bezier(.2,.8,.2,1)' }}
+        />
+      </svg>
+      <div className="absolute inset-0 grid place-items-center text-center leading-none">
+        <div>
+          <p className="text-lg font-extrabold tabular-nums">
+            {n}
+            <span className="text-muted text-xs font-semibold">/{total}</span>
+          </p>
+          <p className="text-[10px] text-muted mt-0.5">נמצאים</p>
+        </div>
+      </div>
+    </div>
   );
 }

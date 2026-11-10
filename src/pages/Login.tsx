@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { sendCode, signInWithGoogle, verifyCode } from '../lib/auth';
+import Logo from '../components/Logo';
+import { APP_NAME } from '../lib/brand';
+import { ArrowRight, Heart, Mail } from 'lucide-react';
 
 function GoogleLogo() {
   return (
@@ -51,20 +54,32 @@ export default function Login({ invited }: { invited?: boolean }) {
   }
 
   return (
-    <div className="min-h-screen grid place-items-center p-6 bg-gradient-to-b from-brand/20 to-bg">
-      <div className="card w-full max-w-sm p-6 space-y-5 anim-pop">
-        <div className="text-center">
-          <div className="text-6xl mb-2">🧸</div>
-          <h1 className="text-2xl font-extrabold">היומן של המשפחתון</h1>
-          <p className="text-muted text-sm mt-1">
-            {invited ? 'הוזמנתם לצפות ביומן של הילד/ה 💛 התחברו כדי להמשיך' : 'חיתולים, אוכל, שינה ותמונות, במקום אחד'}
+    <div className="relative min-h-screen grid place-items-center p-6 overflow-hidden">
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-brandsoft via-bg to-bg" />
+      <div className="absolute -top-24 -right-20 h-72 w-72 rounded-full bg-brand/15 blur-3xl -z-10" />
+      <div className="absolute top-40 -left-24 h-64 w-64 rounded-full bg-accent/15 blur-3xl -z-10" />
+      <div className="w-full max-w-sm space-y-6">
+        <div className="text-center anim-rise">
+          <Logo size={92} className="mx-auto drop-shadow-md" />
+          <h1 className="text-[26px] font-extrabold tracking-tight mt-4">{APP_NAME}</h1>
+          <p className="text-muted mt-1.5">
+            {invited ? (
+              <>
+                הוזמנתם לצפות ביומן של הילד/ה <Heart size={14} className="inline text-brand fill-brand -mt-0.5" />
+                <br />
+                התחברו כדי להמשיך
+              </>
+            ) : (
+              'חיתולים, אוכל, שינה ותמונות, במקום אחד'
+            )}
           </p>
         </div>
+      <div className="card p-6 space-y-5 anim-rise" style={{ animationDelay: '80ms' }}>
 
         {mode === 'google' ? (
           <>
             <button
-              className="btn w-full text-lg bg-white text-[#1f1f1f] border border-[#dadce0] shadow-soft !min-h-[56px]"
+              className="btn w-full text-[17px] bg-white text-[#1f1f1f] border border-[#dadce0] shadow-soft !min-h-[56px] hover:bg-[#f8f9fa]"
               onClick={google}
               disabled={busy}
             >
@@ -72,8 +87,11 @@ export default function Login({ invited }: { invited?: boolean }) {
               {busy ? 'מעביר ל-Google…' : 'התחברות עם Google'}
             </button>
             {err && <p className="text-danger text-sm text-center">{err}</p>}
-            <button className="w-full text-sm text-muted underline underline-offset-4" onClick={() => setMode('email')}>
-              אין לי חשבון Google
+            <div className="flex items-center gap-3 text-xs text-muted">
+              <span className="h-px flex-1 bg-line" /> או <span className="h-px flex-1 bg-line" />
+            </div>
+            <button className="btn-ghost w-full !min-h-[44px] text-sm" onClick={() => setMode('email')}>
+              <Mail size={16} /> כניסה עם מייל
             </button>
           </>
         ) : (
@@ -99,11 +117,15 @@ export default function Login({ invited }: { invited?: boolean }) {
             <button className="btn-primary w-full" disabled={busy || (mode === 'code' && code.length < 6)}>
               {busy ? '...' : mode === 'email' ? 'שליחת מייל כניסה' : 'כניסה'}
             </button>
-            <button type="button" className="w-full text-sm text-muted" onClick={() => (setMode('google'), setCode(''), setErr(''))}>
-              → חזרה לכניסה עם Google
+            <button type="button" className="w-full text-sm text-muted inline-flex items-center justify-center gap-1" onClick={() => (setMode('google'), setCode(''), setErr(''))}>
+              <ArrowRight size={15} /> חזרה לכניסה עם Google
             </button>
           </form>
         )}
+      </div>
+      <p className="text-center text-xs text-muted">
+        <a href="privacy.html" className="underline underline-offset-4">מדיניות פרטיות</a>
+      </p>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import type { Photo } from '../lib/types';
 import { useData } from '../hooks/useData';
 import { hhmm } from '../lib/util';
+import { Share2, Trash2, X } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function PhotoViewer({ photo, onClose, onDelete }: { photo: Photo | null; onClose: () => void; onDelete?: (p: Photo) => void }) {
@@ -28,8 +29,8 @@ export default function PhotoViewer({ photo, onClose, onDelete }: { photo: Photo
   return (
     <div className="fixed inset-0 z-[55] bg-black/95 flex flex-col anim-fade" role="dialog" aria-modal="true">
       <div className="flex items-center justify-between p-3 text-white">
-        <button className="h-11 w-11 rounded-full bg-white/10" onClick={onClose} aria-label="סגירה">
-          ✕
+        <button className="h-11 w-11 grid place-items-center rounded-full bg-white/10" onClick={onClose} aria-label="סגירה">
+          <X size={20} />
         </button>
         <div className="text-center text-sm">
           <p className="font-semibold">{names || 'ללא תיוג'}</p>
@@ -38,12 +39,12 @@ export default function PhotoViewer({ photo, onClose, onDelete }: { photo: Photo
           </p>
         </div>
         <div className="flex gap-2">
-          <button className="h-11 px-3 rounded-full bg-white/10" onClick={share}>
-            שיתוף
+          <button className="h-11 px-3 inline-flex items-center gap-1.5 rounded-full bg-white/10" onClick={share}>
+            <Share2 size={17} /> שיתוף
           </button>
           {onDelete && (
-            <button className="h-11 w-11 rounded-full bg-white/10" onClick={() => onDelete(photo)} aria-label="מחיקה">
-              🗑️
+            <button className="h-11 w-11 grid place-items-center rounded-full bg-white/10" onClick={() => onDelete(photo)} aria-label="מחיקה">
+              <Trash2 size={18} />
             </button>
           )}
         </div>

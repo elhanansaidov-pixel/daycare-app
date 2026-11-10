@@ -3,6 +3,8 @@ import Sheet from './Sheet';
 import Avatar from './Avatar';
 import { useData } from '../hooks/useData';
 import { useToast } from './Toast';
+import { Camera, ImagePlus, X } from 'lucide-react';
+import { Bubble } from './Icon';
 import { compressImage } from '../lib/util';
 
 /** Pick/take photos and tag children. `preselect` children are tagged by default. */
@@ -53,7 +55,7 @@ export default function PhotoSheet({ open, onClose, preselect = [] }: { open: bo
     <Sheet
       open={open}
       onClose={onClose}
-      title="📷 תמונות"
+      title={<span className="flex items-center gap-2.5"><Bubble k="photo" size={36} /> תמונות</span>}
       footer={
         <button className="btn-primary w-full text-lg" disabled={!files.length || busy} onClick={save}>
           {busy ? 'שומר…' : files.length ? `שמירת ${files.length} תמונות` : 'בחרו תמונות'}
@@ -64,10 +66,10 @@ export default function PhotoSheet({ open, onClose, preselect = [] }: { open: bo
       <input ref={galRef} type="file" accept="image/*" multiple hidden onChange={(e) => onPick(e.target.files)} />
       <div className="grid grid-cols-2 gap-2">
         <button className="btn-ghost !min-h-[64px]" onClick={() => camRef.current?.click()}>
-          📸 צילום
+          <Camera size={20} /> צילום
         </button>
         <button className="btn-ghost !min-h-[64px]" onClick={() => galRef.current?.click()}>
-          🖼️ מהגלריה
+          <ImagePlus size={20} /> מהגלריה
         </button>
       </div>
       {files.length > 0 && (
@@ -76,11 +78,11 @@ export default function PhotoSheet({ open, onClose, preselect = [] }: { open: bo
             <div key={f.url} className="relative shrink-0">
               <img src={f.url} alt="" className="h-24 w-24 object-cover rounded-2xl" />
               <button
-                className="absolute -top-1 -left-1 h-7 w-7 rounded-full bg-ink text-bg text-xs"
+                className="absolute -top-1 -left-1 h-7 w-7 grid place-items-center rounded-full bg-ink text-bg shadow-soft"
                 onClick={() => setFiles((x) => x.filter((_, j) => j !== i))}
                 aria-label="הסרה"
               >
-                ✕
+                <X size={14} />
               </button>
             </div>
           ))}

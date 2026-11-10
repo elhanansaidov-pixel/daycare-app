@@ -7,6 +7,7 @@ import PhotoSheet from '../components/PhotoSheet';
 import PhotoViewer from '../components/PhotoViewer';
 import Avatar from '../components/Avatar';
 import { useToast } from '../components/Toast';
+import { ImagePlus, Images } from 'lucide-react';
 import type { Photo } from '../lib/types';
 
 export function PhotoGrid({ childFilter, canDelete, days = 30 }: { childFilter: string | null; canDelete: boolean; days?: number }) {
@@ -36,7 +37,10 @@ export function PhotoGrid({ childFilter, canDelete, days = 30 }: { childFilter: 
   if (!shown.length)
     return (
       <div className="card p-10 text-center text-muted">
-        <p className="text-4xl mb-2">🖼️</p>
+        <span className="inline-grid place-items-center h-16 w-16 rounded-full bg-photo/15 text-photo mb-3">
+          <Images size={28} />
+        </span>
+        <br />
         אין עדיין תמונות
       </div>
     );
@@ -45,10 +49,10 @@ export function PhotoGrid({ childFilter, canDelete, days = 30 }: { childFilter: 
     <>
       {[...groups.entries()].map(([k, list]) => (
         <section key={k}>
-          <h3 className="font-bold mb-2 mt-4">{format(new Date(k + 'T12:00'), 'EEEE, d בMMMM', { locale: he })}</h3>
+          <h3 className="font-bold text-muted text-sm mb-2 mt-5">{format(new Date(k + 'T12:00'), 'EEEE, d בMMMM', { locale: he })}</h3>
           <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-1.5">
             {list.map((p) => (
-              <button key={p.id} className="aspect-square rounded-2xl overflow-hidden bg-sunk" onClick={() => setView(p)}>
+              <button key={p.id} className="aspect-square rounded-2xl overflow-hidden bg-sunk transition active:scale-95 hover:opacity-90" onClick={() => setView(p)}>
                 {p.url && <img src={p.url} alt={p.caption} className="h-full w-full object-cover" loading="lazy" />}
               </button>
             ))}
@@ -79,9 +83,9 @@ export default function Gallery() {
   const [adding, setAdding] = useState(false);
   return (
     <>
-      <PageHeader sub="30 הימים האחרונים" title="תמונות 🖼️">
+      <PageHeader sub="30 הימים האחרונים" title="תמונות" icon={Images}>
         <button className="btn-primary" onClick={() => setAdding(true)}>
-          📷 הוספה
+          <ImagePlus size={18} /> הוספה
         </button>
       </PageHeader>
       <div className="max-w-6xl mx-auto px-4">

@@ -89,20 +89,27 @@ export function moodFor(c: Child, key?: string) {
   return `${m.icon} ${m.label.replace('/ה', c.gender === 'girl' ? 'ה' : '').replace('/ת', c.gender === 'girl' ? 'ת' : '')}`;
 }
 
-export function eventTitle(e: DayEvent): { icon: string; title: string } {
+export type IconKey =
+  | 'pee' | 'poop' | 'both' | 'diaper'
+  | 'bottle' | 'porridge' | 'meal' | 'snack' | 'fruit' | 'feed'
+  | 'sleep' | 'wake' | 'arrive' | 'leave' | 'note' | 'photo';
+
+export function eventTitle(e: DayEvent): { icon: IconKey; emoji?: string; title: string } {
   switch (e.type) {
-    case 'diaper':
-      return { icon: DIAPER_ICON[e.subtype ?? 'pee'] ?? '🧷', title: `חיתול · ${DIAPER_LABEL[e.subtype ?? 'pee'] ?? ''}` };
+    case 'diaper': {
+      const k = (e.subtype ?? 'pee') as IconKey;
+      return { icon: k in DIAPER_LABEL ? k : 'diaper', title: `חיתול · ${DIAPER_LABEL[e.subtype ?? 'pee'] ?? ''}` };
+    }
     case 'feed': {
-      const base = FEED_LABEL[e.subtype ?? 'meal'] ?? 'אוכל';
-      return { icon: FEED_ICON[e.subtype ?? 'meal'] ?? '🍽️', title: base };
+      const k = (e.subtype ?? 'meal') as IconKey;
+      return { icon: k in FEED_LABEL ? k : 'feed', title: FEED_LABEL[e.subtype ?? 'meal'] ?? 'אוכל' };
     }
     case 'sleep':
-      return { icon: '😴', title: 'שינה' };
+      return { icon: 'sleep', title: 'שינה' };
     case 'attendance':
-      return e.subtype === 'arrive' ? { icon: '👋', title: 'הגיע/ה' } : { icon: '🏠', title: 'נאסף/ה' };
+      return e.subtype === 'arrive' ? { icon: 'arrive', title: 'הגיע/ה' } : { icon: 'leave', title: 'נאסף/ה' };
     case 'note':
-      return { icon: MOODS.find((m) => m.key === e.data.mood)?.icon ?? '📝', title: 'הערה' };
+      return { icon: 'note', emoji: MOODS.find((m) => m.key === e.data.mood)?.icon, title: 'הערה' };
   }
 }
 

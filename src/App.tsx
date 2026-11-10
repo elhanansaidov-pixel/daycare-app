@@ -17,6 +17,7 @@ import { createLocalStore } from './lib/localStore';
 import { createSupabaseStore } from './lib/supabaseStore';
 import { getRole, redeemInvite, setPendingInvite, takePendingInvite, type Role } from './lib/auth';
 import { useReminderTicker } from './hooks/useAlerts';
+import Logo from './components/Logo';
 
 function ReminderRunner() {
   const toast = useToast();
@@ -47,7 +48,7 @@ function CaregiverApp() {
 function Splash() {
   return (
     <div className="min-h-screen grid place-items-center">
-      <div className="text-6xl anim-pulse">🧸</div>
+      <Logo size={72} className="anim-breathe" />
     </div>
   );
 }

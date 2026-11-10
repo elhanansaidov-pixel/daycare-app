@@ -5,6 +5,7 @@ import DayNav from '../components/DayNav';
 import Avatar from '../components/Avatar';
 import { useToast } from '../components/Toast';
 import { buildSummary } from '../lib/summary';
+import { Check, Copy, MessageCircleHeart, Send } from 'lucide-react';
 import { waLink } from '../lib/util';
 
 export default function Summary() {
@@ -17,7 +18,7 @@ export default function Summary() {
 
   return (
     <>
-      <PageHeader sub="שליחה להורים בוואטסאפ" title="סיכום יומי 💬" />
+      <PageHeader sub="שליחה להורים בוואטסאפ" title="סיכום יומי" icon={MessageCircleHeart} />
       <div className="max-w-3xl mx-auto px-4 space-y-3">
         <DayNav day={day} setDay={setDay} />
         {children.map((c) => {
@@ -31,7 +32,7 @@ export default function Summary() {
                 <Avatar child={c} size={44} />
                 <div className="flex-1">
                   <h3 className="font-bold text-lg leading-tight">
-                    {c.name} {sent[key] && <span className="text-ok text-sm">✓ נשלח</span>}
+                    {c.name} {sent[key] && <span className="badge-ok align-middle"><Check size={12} strokeWidth={3} /> נשלח</span>}
                   </h3>
                   <p className="text-sm text-muted">{count} רישומים</p>
                 </div>
@@ -52,7 +53,7 @@ export default function Summary() {
                     className="btn bg-[#25D366] text-white flex-1 min-w-[9rem]"
                     onClick={() => setSent((s) => ({ ...s, [key]: true }))}
                   >
-                    שליחה ל{g.relation || g.name}
+                    <Send size={16} /> שליחה ל{g.relation || g.name}
                   </a>
                 ))}
                 <button
@@ -62,7 +63,7 @@ export default function Summary() {
                     toast({ text: 'הועתק, אפשר להדביק בוואטסאפ', icon: '📋' });
                   }}
                 >
-                  📋 העתקה
+                  <Copy size={16} /> העתקה
                 </button>
               </div>
               {!gs.length && <p className="text-xs text-muted mt-2">טיפ: הוסיפו טלפון של הורה בכרטיס הילד כדי לשלוח בלחיצה.</p>}

@@ -15,6 +15,7 @@ export interface Child {
   active: boolean;
   sort: number;
   invite_code?: string;
+  avatar?: string | null; // small square JPEG data URL (face crop)
 }
 
 export interface Guardian {

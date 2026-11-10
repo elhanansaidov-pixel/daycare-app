@@ -12,6 +12,8 @@ import type { Reminder } from '../lib/types';
 import { ageLabel, uid } from '../lib/util';
 import { describe } from '../components/Timeline';
 import { signOut } from '../lib/auth';
+import { AlarmClock, ChevronLeft, Cloud, Download, Eye, Monitor as MonitorSmartphone, Moon, Palette, Plus, Settings as SettingsIcon, Smartphone, Sun, Trash2 } from 'lucide-react';
+import { getThemePref, setThemePref, type ThemePref } from '../lib/theme';
 import { supabase } from '../lib/supabase';
 
 const DAY_NAMES = ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳'];
@@ -23,6 +25,7 @@ export default function Settings() {
   const [newChild, setNewChild] = useState(false);
   const [rem, setRem] = useState<Reminder | null>(null);
   const [email, setEmail] = useState<string | null>(null);
+  const [theme, setTheme] = useState<ThemePref>(getThemePref());
   const [notif, setNotif] = useState(typeof Notification !== 'undefined' ? Notification.permission : 'denied');
   useEffect(() => setS(settings), [settings]);
   useEffect(() => {
@@ -51,7 +54,7 @@ export default function Settings() {
 
   return (
     <>
-      <PageHeader title="הגדרות ⚙️" />
+      <PageHeader title="הגדרות" icon={SettingsIcon} />
       <div className="max-w-3xl mx-auto px-4 space-y-4">
         <section className="card p-4 space-y-3">
           <h2 className="font-bold text-lg">המשפחתון</h2>
@@ -67,18 +70,44 @@ export default function Settings() {
             className="btn-primary w-full"
             onClick={async () => {
               await store.saveSettings(s);
-              toast({ text: 'נשמר', icon: '✅' });
+              toast({ text: 'נשמר', icon: '✓' });
             }}
           >
             שמירה
           </button>
         </section>
 
+        <section className="card p-4 space-y-3">
+          <h2 className="section-title">
+            <Palette size={20} className="text-brand" /> תצוגה
+          </h2>
+          <div className="segmented">
+            {(
+              [
+                ['system', 'לפי המכשיר', MonitorSmartphone],
+                ['light', 'בהיר', Sun],
+                ['dark', 'כהה', Moon],
+              ] as const
+            ).map(([k, l, I]) => (
+              <button
+                key={k}
+                className={`segmented-item ${theme === k ? 'on' : ''}`}
+                onClick={() => {
+                  setTheme(k);
+                  setThemePref(k);
+                }}
+              >
+                <I size={16} /> {l}
+              </button>
+            ))}
+          </div>
+        </section>
+
         <section className="card p-4">
           <div className="flex items-center justify-between mb-2">
             <h2 className="font-bold text-lg">ילדים ({active.length})</h2>
             <button className="btn-ghost !min-h-[40px]" onClick={() => setNewChild(true)}>
-              + הוספת ילד/ה
+              <Plus size={17} /> הוספת ילד/ה
             </button>
           </div>
           <ul className="divide-y divide-line">
@@ -88,7 +117,7 @@ export default function Settings() {
                   <Avatar child={c} size={40} />
                   <span className="font-semibold flex-1">{c.name}</span>
                   <span className="text-sm text-muted">{ageLabel(c.birth_date)}</span>
-                  <span className="text-muted">‹</span>
+                  <ChevronLeft size={18} className="text-muted" />
                 </Link>
               </li>
             ))}
@@ -107,12 +136,12 @@ export default function Settings() {
 
         <section className="card p-4">
           <div className="flex items-center justify-between mb-2">
-            <h2 className="font-bold text-lg">⏰ תזכורות</h2>
+            <h2 className="section-title"><AlarmClock size={20} className="text-brand" /> תזכורות</h2>
             <button
               className="btn-ghost !min-h-[40px]"
               onClick={() => setRem({ id: uid(), child_id: null, title: '', time_of_day: '10:00', days: [0, 1, 2, 3, 4], active: true })}
             >
-              + תזכורת
+              <Plus size={17} /> תזכורת
             </button>
           </div>
           {!reminders.length && <p className="text-sm text-muted">למשל: ״תרופה לכפיר״ ב-10:00, או ״ארוחת צהריים״ ב-12:00.</p>}
@@ -136,7 +165,7 @@ export default function Settings() {
           <div className="mt-3 rounded-2xl bg-sunk p-3 text-sm flex items-center gap-3">
             <span className="flex-1">
               {notif === 'granted'
-                ? '🔔 התראות מופעלות. הן יופיעו כשהאפליקציה פתוחה או ברקע.'
+                ? 'התראות מופעלות. הן יופיעו כשהאפליקציה פתוחה או ברקע.'
                 : 'כדי לקבל התראה קופצת עם צליל, צריך לאשר התראות.'}
             </span>
             {notif !== 'granted' && typeof Notification !== 'undefined' && (
@@ -150,15 +179,15 @@ export default function Settings() {
         <section className="card p-4 space-y-3">
           <h2 className="font-bold text-lg">נתונים וחשבון</h2>
           <button className="btn-ghost w-full" onClick={exportCsv}>
-            ⬇️ ייצוא 90 ימים אחרונים לאקסל (CSV)
+            <Download size={18} /> ייצוא 90 ימים אחרונים לאקסל (CSV)
           </button>
           <Link to="/parent" className="btn-ghost w-full">
-            👀 תצוגה מקדימה של פורטל ההורים
+            <Eye size={18} /> תצוגה מקדימה של פורטל ההורים
           </Link>
           {store.mode === 'cloud' ? (
             <div className="flex items-center gap-3 rounded-2xl bg-sunk p-3">
               <span className="flex-1 text-sm">
-                ☁️ מחובר/ת לענן{email ? <> · <span dir="ltr">{email}</span></> : ''}
+                <Cloud size={16} className="inline -mt-0.5 text-ok" /> מחובר/ת לענן{email ? <> · <span dir="ltr">{email}</span></> : ''}
               </span>
               <button className="btn-danger !min-h-[40px]" onClick={() => signOut().then(() => location.reload())}>
                 יציאה
@@ -166,11 +195,11 @@ export default function Settings() {
             </div>
           ) : (
             <p className="rounded-2xl bg-warn/15 p-3 text-sm">
-              📱 מצב מקומי: הנתונים נשמרים רק בדפדפן של המכשיר הזה. אחרי חיבור ל-Supabase הם יישמרו בענן, יסונכרנו בין מכשירים ויופיעו להורים בפורטל.
+              מצב מקומי: הנתונים נשמרים רק בדפדפן של המכשיר הזה. אחרי חיבור ל-Supabase הם יישמרו בענן, יסונכרנו בין מכשירים ויופיעו להורים בפורטל.
             </p>
           )}
           <details className="rounded-2xl bg-sunk p-3 text-sm">
-            <summary className="font-semibold cursor-pointer">📲 איך מתקינים כאפליקציה בטלפון?</summary>
+            <summary className="font-semibold cursor-pointer inline-flex items-center gap-2"><Smartphone size={16} /> איך מתקינים כאפליקציה בטלפון?</summary>
             <p className="mt-2">
               <b>אייפון (Safari):</b> כפתור השיתוף ⬆️ ← ״הוספה למסך הבית״.
               <br />
@@ -187,7 +216,7 @@ export default function Settings() {
       <Sheet
         open={!!rem}
         onClose={() => setRem(null)}
-        title="⏰ תזכורת"
+        title="תזכורת"
         footer={
           rem && (
             <div className="flex gap-2">
@@ -197,7 +226,7 @@ export default function Settings() {
                 onClick={async () => {
                   await store.saveReminder({ ...rem, title: rem.title.trim() });
                   setRem(null);
-                  toast({ text: 'התזכורת נשמרה', icon: '⏰' });
+                  toast({ text: 'התזכורת נשמרה', icon: '✓' });
                 }}
               >
                 שמירה
@@ -210,7 +239,7 @@ export default function Settings() {
                     setRem(null);
                   }}
                 >
-                  🗑️
+                  <Trash2 size={18} />
                 </button>
               )}
             </div>

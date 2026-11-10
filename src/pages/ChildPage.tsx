@@ -11,6 +11,9 @@ import ChildForm from '../components/ChildForm';
 import { ageLabel, telLink, waLink } from '../lib/util';
 import { buildSummary } from '../lib/summary';
 import type { EventType } from '../lib/types';
+import type { IconKey } from '../lib/util';
+import { Bubble } from '../components/Icon';
+import { ArrowRight, BookOpen, IdCard, MessageCircle, Phone, Pill, Pin, TriangleAlert } from 'lucide-react';
 
 export default function ChildPage() {
   const { id } = useParams();
@@ -28,48 +31,48 @@ export default function ChildPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <header className="px-4 pt-4 pb-4" style={{ background: `linear-gradient(to bottom, ${child.color}30, transparent)` }}>
-        <Link to="/" className="inline-flex items-center gap-1 text-muted font-medium h-10">
-          → חזרה
+      <header className="px-4 pt-4 pb-4" style={{ background: `linear-gradient(to bottom, ${child.color}38, ${child.color}0A 70%, transparent)` }}>
+        <Link to="/" className="icon-btn !bg-card/80 shadow-soft" aria-label="חזרה">
+          <ArrowRight size={20} />
         </Link>
-        <div className="flex items-center gap-4 mt-1">
-          <Avatar child={child} size={72} />
+        <div className="flex items-center gap-4 mt-3">
+          <Avatar child={child} size={80} />
           <div className="flex-1 min-w-0">
-            <h1 className="text-3xl font-extrabold">{child.name}</h1>
+            <h1 className="text-3xl font-extrabold tracking-tight">{child.name}</h1>
             <p className="text-muted">{ageLabel(child.birth_date) || 'הוסיפו תאריך לידה בכרטיס'}</p>
           </div>
           {mine[0]?.phone && (
             <div className="flex gap-2">
-              <a href={telLink(mine[0].phone)} className="h-12 w-12 grid place-items-center rounded-full bg-card shadow-soft text-xl" aria-label={`חיוג ל${mine[0].name}`}>
-                📞
+              <a href={telLink(mine[0].phone)} className="h-12 w-12 grid place-items-center rounded-full bg-card shadow-soft text-ok active:scale-90 transition" aria-label={`חיוג ל${mine[0].name}`}>
+                <Phone size={20} />
               </a>
               <a
                 href={waLink(mine[0].phone, buildSummary(child, evs, photos, day, settings))}
                 target="_blank"
                 rel="noreferrer"
-                className="h-12 w-12 grid place-items-center rounded-full bg-card shadow-soft text-xl"
+                className="h-12 w-12 grid place-items-center rounded-full bg-card shadow-soft text-[#25A55F] active:scale-90 transition"
                 aria-label="שליחת סיכום בוואטסאפ"
               >
-                💬
+                <MessageCircle size={20} />
               </a>
             </div>
           )}
         </div>
         {(child.allergies || child.medications) && (
           <div className="flex flex-wrap gap-2 mt-3">
-            {child.allergies && <span className="rounded-full bg-danger/10 text-danger text-sm font-semibold px-3 py-1">⚠️ {child.allergies}</span>}
-            {child.medications && <span className="rounded-full bg-warn/15 text-sm font-semibold px-3 py-1">💊 {child.medications}</span>}
+            {child.allergies && <span className="badge-danger !text-sm !px-3"><TriangleAlert size={14} /> {child.allergies}</span>}
+            {child.medications && <span className="badge-warn !text-sm !px-3"><Pill size={14} /> {child.medications}</span>}
           </div>
         )}
-        <div className="flex rounded-2xl bg-sunk p-1 mt-4 font-semibold">
+        <div className="segmented mt-4">
           {(
             [
-              ['log', '📖 יומן'],
-              ['profile', '🪪 כרטיס ילד'],
+              ['log', 'יומן', BookOpen],
+              ['profile', 'כרטיס ילד', IdCard],
             ] as const
-          ).map(([k, l]) => (
-            <button key={k} className={`flex-1 h-10 rounded-xl ${tab === k ? 'bg-card shadow-soft' : 'text-muted'}`} onClick={() => setParams(k === 'log' ? {} : { tab: k }, { replace: true })}>
-              {l}
+          ).map(([k, l, I]) => (
+            <button key={k} className={`segmented-item ${tab === k ? 'on' : ''}`} onClick={() => setParams(k === 'log' ? {} : { tab: k }, { replace: true })}>
+              <I size={16} /> {l}
             </button>
           ))}
         </div>
@@ -82,24 +85,28 @@ export default function ChildPage() {
             <div className="grid grid-cols-6 gap-1.5">
               {(
                 [
-                  ['diaper', '🧷', 'חיתול'],
-                  ['feed', '🍼', 'אוכל'],
-                  ['sleep', '😴', 'שינה'],
-                  ['note', '📝', 'הערה'],
-                  ['attendance', '👋', 'נוכחות'],
-                ] as [EventType, string, string][]
-              ).map(([t, i, l]) => (
-                <button key={t} className="flex flex-col items-center rounded-2xl bg-card shadow-soft py-2 active:scale-90" onClick={() => setSheet(t)}>
-                  <span className="text-xl">{i}</span>
-                  <span className="text-[11px] text-muted">{l}</span>
+                  ['diaper', 'pee', 'חיתול'],
+                  ['feed', 'meal', 'אוכל'],
+                  ['sleep', 'sleep', 'שינה'],
+                  ['note', 'note', 'הערה'],
+                  ['attendance', 'arrive', 'נוכחות'],
+                ] as [EventType, IconKey, string][]
+              ).map(([t, k, l]) => (
+                <button key={t} className="tile !bg-card shadow-soft border border-line/70 !min-h-[70px]" onClick={() => setSheet(t)}>
+                  <Bubble k={k} size={32} />
+                  <span className="tile-label">{l}</span>
                 </button>
               ))}
-              <button className="flex flex-col items-center rounded-2xl bg-card shadow-soft py-2 active:scale-90" onClick={() => setPhoto(true)}>
-                <span className="text-xl">📷</span>
-                <span className="text-[11px] text-muted">תמונה</span>
+              <button className="tile !bg-card shadow-soft border border-line/70 !min-h-[70px]" onClick={() => setPhoto(true)}>
+                <Bubble k="photo" size={32} />
+                <span className="tile-label">תמונה</span>
               </button>
             </div>
-            {child.notes && <p className="rounded-2xl bg-sunk p-3 text-sm">📌 {child.notes}</p>}
+            {child.notes && (
+              <p className="rounded-2xl bg-brandsoft/70 p-3 text-sm flex gap-2">
+                <Pin size={16} className="text-brand shrink-0 mt-0.5" /> {child.notes}
+              </p>
+            )}
             <div className="card p-3">
               <Timeline child={child} events={evs} photos={photos} day={day} emptyText={isToday(day) ? 'עוד לא תועד כלום היום' : 'אין תיעוד ליום הזה'} />
             </div>

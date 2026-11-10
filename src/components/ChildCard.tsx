@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
+import { AlarmClock, Camera, Check, House, Plus, TriangleAlert } from 'lucide-react';
 import type { Child, DayEvent } from '../lib/types';
 import Avatar from './Avatar';
-import { ageLabel, clockDuration, durationLabel, lastOf, openSleep, presence, childWord, hhmm, DIAPER_ICON, FEED_ICON } from '../lib/util';
+import { EvIcon } from './Icon';
+import { ageLabel, clockDuration, durationLabel, lastOf, openSleep, presence, childWord, hhmm, type IconKey } from '../lib/util';
 import { useNow } from '../hooks/useData';
 import { useActions } from '../hooks/useActions';
 
@@ -14,6 +16,7 @@ export default function ChildCard({
   onSelect,
   onFeed,
   onPhoto,
+  index = 0,
 }: {
   child: Child;
   events: DayEvent[];
@@ -23,6 +26,7 @@ export default function ChildCard({
   onSelect: () => void;
   onFeed: () => void;
   onPhoto: () => void;
+  index?: number;
 }) {
   const now = useNow(1000);
   const act = useActions();
@@ -39,24 +43,27 @@ export default function ChildCard({
 
   return (
     <article
-      className={`card relative overflow-hidden transition ${pres === 'in' ? '' : 'opacity-[.82]'} ${selected ? 'ring-4 ring-brand' : ''}`}
+      className={`card relative overflow-hidden transition anim-rise ${pres === 'in' ? '' : 'opacity-[.86]'} ${selected ? 'ring-4 ring-brand' : ''} ${selectMode ? 'cursor-pointer' : ''}`}
+      style={{ animationDelay: `${Math.min(index, 8) * 45}ms` }}
       onClick={selectMode ? onSelect : undefined}
     >
-      <div className="absolute inset-x-0 top-0 h-1.5" style={{ background: child.color }} />
-      <header className="flex items-center gap-3 p-4 pb-2">
-        {selectMode ? (
-          <div className={`h-8 w-8 rounded-full border-2 grid place-items-center ${selected ? 'bg-brand border-brand text-white' : 'border-line'}`}>{selected && '✓'}</div>
-        ) : null}
+      <div className="absolute inset-x-0 top-0 h-20 pointer-events-none" style={{ background: `linear-gradient(to bottom, ${child.color}26, transparent)` }} />
+      <header className="relative flex items-center gap-3 p-4 pb-2">
+        {selectMode && (
+          <div className={`h-7 w-7 rounded-full border-2 grid place-items-center transition ${selected ? 'bg-brand border-brand text-white' : 'border-line bg-card'}`}>
+            {selected && <Check size={16} strokeWidth={3} />}
+          </div>
+        )}
         <Link to={`/child/${child.id}`} className="flex items-center gap-3 flex-1 min-w-0" onClick={(e) => selectMode && e.preventDefault()}>
-          <Avatar child={child} size={52} />
+          <Avatar child={child} size={54} />
           <div className="min-w-0">
             <h3 className="text-xl font-bold leading-tight truncate">{child.name}</h3>
             <p className="text-sm text-muted">{ageLabel(child.birth_date) || (child.gender === 'girl' ? 'בת' : 'בן')}</p>
           </div>
         </Link>
         <button
-          className={`rounded-full px-3 h-9 text-sm font-semibold shrink-0 ${
-            pres === 'in' ? 'bg-ok/15 text-ok' : pres === 'out' ? 'bg-sunk text-muted' : 'bg-sunk text-muted border border-dashed border-line'
+          className={`badge !text-[13px] !px-3 h-9 shrink-0 transition active:scale-95 ${
+            pres === 'in' ? 'bg-ok/15 text-ok' : pres === 'out' ? 'bg-sunk text-muted' : 'bg-card text-muted border border-dashed border-line'
           }`}
           onClick={(e) => {
             e.stopPropagation();
@@ -64,52 +71,67 @@ export default function ChildCard({
           }}
           title={pres === 'in' ? 'סמן איסוף' : 'סמן הגעה'}
         >
-          {pres === 'in' ? `✓ ${childWord(child, 'נמצא', 'נמצאת')}` : pres === 'out' ? '🏠 נאסף/ה' : '+ הגעה'}
+          {pres === 'in' ? (
+            <>
+              <span className="h-2 w-2 rounded-full bg-ok anim-pulse" /> {childWord(child, 'נמצא', 'נמצאת')}
+            </>
+          ) : pres === 'out' ? (
+            <>
+              <House size={14} /> {childWord(child, 'נאסף', 'נאספה')}
+            </>
+          ) : (
+            <>
+              <Plus size={14} /> הגעה
+            </>
+          )}
         </button>
       </header>
 
       {child.allergies && (
-        <p className="mx-4 mb-1 inline-flex items-center gap-1 rounded-full bg-danger/10 text-danger text-xs font-semibold px-2.5 py-1">
-          ⚠️ אלרגיה: {child.allergies}
+        <p className="relative mx-4 mb-1 badge-danger">
+          <TriangleAlert size={13} /> אלרגיה: {child.allergies}
         </p>
       )}
 
-      <dl className="grid grid-cols-3 gap-2 px-4 py-2 text-center">
-        <Stat label="חיתול" value={ago(lastDiaper)} sub={diapers ? `${diapers} היום` : ''} alert={overdue.has('diaper')} />
+      <dl className="relative grid grid-cols-3 gap-2 px-4 py-2 text-center">
+        <Stat k="diaper" label="חיתול" value={ago(lastDiaper)} sub={diapers ? `${diapers} היום` : ''} alert={overdue.has('diaper')} />
         <Stat
+          k={(lastFeed?.subtype as IconKey) ?? 'feed'}
           label="אוכל"
           value={ago(lastFeed)}
-          sub={lastFeed ? `${FEED_ICON[lastFeed.subtype ?? 'meal'] ?? ''} ${hhmm(lastFeed.started_at)}` : ''}
+          sub={lastFeed ? hhmm(lastFeed.started_at) : ''}
           alert={overdue.has('feed')}
         />
         {sleep ? (
-          <div className="rounded-2xl bg-[#9AA8F5]/20 py-2">
-            <dt className="text-xs text-muted">{childWord(child, 'ישן', 'ישנה')} 💤</dt>
-            <dd className="font-bold tabular-nums anim-pulse">{clockDuration(now - new Date(sleep.started_at).getTime())}</dd>
+          <div className="rounded-2xl bg-sleep/15 py-2 px-1">
+            <dt className="text-xs text-sleep font-medium inline-flex items-center gap-1">
+              <EvIcon k="sleep" size={13} className="anim-breathe" /> {childWord(child, 'ישן', 'ישנה')}
+            </dt>
+            <dd className="font-bold tabular-nums text-[15px]">{clockDuration(now - new Date(sleep.started_at).getTime())}</dd>
           </div>
         ) : (
-          <Stat label="שינה היום" value={sleptMs ? durationLabel(sleptMs) : '—'} />
+          <Stat k="sleep" label="שינה היום" value={sleptMs ? durationLabel(sleptMs) : '—'} />
         )}
       </dl>
 
       {!selectMode && (
-        <div className="grid grid-cols-5 gap-1.5 p-3 pt-1">
-          <QuickBtn icon={DIAPER_ICON.pee} label="פיפי" onClick={() => act.diaper([child], 'pee')} />
-          <QuickBtn icon={DIAPER_ICON.poop} label="קקי" onClick={() => act.diaper([child], 'poop')} />
-          <QuickBtn icon="🍼" label="אוכל" onClick={onFeed} />
-          <QuickBtn icon={sleep ? '🌤️' : '😴'} label={sleep ? 'התעורר/ה' : 'שינה'} onClick={() => act.sleep([child])} active={!!sleep} />
-          <QuickBtn icon="📷" label="תמונה" onClick={onPhoto} />
+        <div className="relative grid grid-cols-5 gap-1.5 p-3 pt-1">
+          <QuickBtn k="pee" label="פיפי" onClick={() => act.diaper([child], 'pee')} />
+          <QuickBtn k="poop" label="קקי" onClick={() => act.diaper([child], 'poop')} />
+          <QuickBtn k="bottle" label="אוכל" onClick={onFeed} />
+          <QuickBtn k={sleep ? 'wake' : 'sleep'} label={sleep ? childWord(child, 'התעורר', 'התעוררה') : 'שינה'} onClick={() => act.sleep([child])} active={!!sleep} />
+          <QuickBtn k="photo" label="תמונה" onClick={onPhoto} icon={<Camera size={22} />} />
         </div>
       )}
     </article>
   );
 }
 
-function Stat({ label, value, sub, alert }: { label: string; value: string; sub?: string; alert?: boolean }) {
+function Stat({ k, label, value, sub, alert }: { k: IconKey; label: string; value: string; sub?: string; alert?: boolean }) {
   return (
     <div className={`rounded-2xl py-2 px-1 ${alert ? 'bg-danger/10 text-danger' : 'bg-sunk'}`}>
-      <dt className={`text-xs ${alert ? '' : 'text-muted'}`}>
-        {alert && '⏰ '}
+      <dt className={`text-xs font-medium inline-flex items-center gap-1 ${alert ? '' : 'text-muted'}`}>
+        {alert ? <AlarmClock size={13} /> : <EvIcon k={k} size={13} />}
         {label}
       </dt>
       <dd className="font-bold text-[15px] leading-tight">{value}</dd>
@@ -118,19 +140,18 @@ function Stat({ label, value, sub, alert }: { label: string; value: string; sub?
   );
 }
 
-function QuickBtn({ icon, label, onClick, active }: { icon: string; label: string; onClick: () => void; active?: boolean }) {
+function QuickBtn({ k, label, onClick, active, icon }: { k: IconKey; label: string; onClick: () => void; active?: boolean; icon?: React.ReactNode }) {
   return (
     <button
-      className={`flex flex-col items-center justify-center rounded-2xl min-h-[60px] transition active:scale-90 ${
-        active ? 'bg-[#9AA8F5]/30' : 'bg-sunk hover:bg-line/60'
-      }`}
+      className={`tile !min-h-[62px] ${active ? '!bg-sleep/20' : ''}`}
+      style={{ color: `rgb(var(--${k === 'photo' ? 'photo' : k === 'wake' ? 'warn' : k === 'pee' ? 'pee' : k === 'poop' ? 'poop' : k === 'sleep' ? 'sleep' : 'feed'}))` }}
       onClick={(e) => {
         e.stopPropagation();
         onClick();
       }}
     >
-      <span className="text-2xl leading-none">{icon}</span>
-      <span className="text-[11px] font-medium mt-1 text-muted">{label}</span>
+      {icon ?? <EvIcon k={k} size={22} />}
+      <span className="tile-label">{label}</span>
     </button>
   );
 }

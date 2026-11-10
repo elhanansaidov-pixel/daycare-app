@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from 'react';
+import { CircleCheck } from 'lucide-react';
 
 interface ToastOpts {
   text: string;
@@ -28,7 +29,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               toast.tone === 'error' ? 'bg-danger text-white' : 'bg-ink text-bg'
             }`}
           >
-            {toast.icon && <span className="text-xl">{toast.icon}</span>}
+            {toast.icon && (toast.icon === '✓' ? <CircleCheck size={22} className="text-ok shrink-0" /> : <span className="text-xl">{toast.icon}</span>)}
             <span className="flex-1 font-medium">{toast.text}</span>
             {toast.action && (
               <button

@@ -6,6 +6,7 @@ import { useActions } from '../hooks/useActions';
 import { PageHeader } from '../components/Layout';
 import Avatar from '../components/Avatar';
 import type { DayEvent } from '../lib/types';
+import { CalendarCheck, ChevronLeft, ChevronRight, LogIn, LogOut } from 'lucide-react';
 import { durationLabel, hhmm, presence } from '../lib/util';
 
 export default function Attendance() {
@@ -48,7 +49,7 @@ export default function Attendance() {
 
   return (
     <>
-      <PageHeader sub={format(new Date(), 'EEEE d בMMMM', { locale: he })} title="נוכחות 🗓️" />
+      <PageHeader sub={format(new Date(), 'EEEE d בMMMM', { locale: he })} title="נוכחות" icon={CalendarCheck} />
       <div className="max-w-4xl mx-auto px-4 space-y-4">
         <section className="card divide-y divide-line">
           {children.map((c) => {
@@ -68,11 +69,11 @@ export default function Attendance() {
                 </div>
                 {p === 'in' ? (
                   <button className="btn bg-sunk min-w-[6.5rem]" onClick={() => act.attendance([c], 'leave')}>
-                    🏠 איסוף
+                    <LogOut size={17} /> איסוף
                   </button>
                 ) : (
                   <button className="btn bg-ok/15 text-ok min-w-[6.5rem]" onClick={() => act.attendance([c], 'arrive')}>
-                    👋 הגעה
+                    <LogIn size={17} /> הגעה
                   </button>
                 )}
               </div>
@@ -82,12 +83,12 @@ export default function Attendance() {
 
         <section className="card p-4">
           <div className="flex items-center justify-between mb-3">
-            <button className="h-10 w-10 rounded-xl bg-sunk" onClick={() => setMonth(addMonths(month, -1))} aria-label="חודש קודם">
-              →
+            <button className="icon-btn !rounded-xl" onClick={() => setMonth(addMonths(month, -1))} aria-label="חודש קודם">
+              <ChevronRight size={20} />
             </button>
             <h2 className="font-bold text-lg">דוח חודשי · {format(month, 'MMMM yyyy', { locale: he })}</h2>
-            <button className="h-10 w-10 rounded-xl bg-sunk disabled:opacity-30" disabled={isSameMonth(month, new Date())} onClick={() => setMonth(addMonths(month, 1))} aria-label="חודש הבא">
-              ←
+            <button className="icon-btn !rounded-xl" disabled={isSameMonth(month, new Date())} onClick={() => setMonth(addMonths(month, 1))} aria-label="חודש הבא">
+              <ChevronLeft size={20} />
             </button>
           </div>
           <div className="overflow-x-auto -mx-4 px-4">

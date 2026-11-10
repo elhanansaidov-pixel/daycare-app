@@ -3,14 +3,16 @@ import Sheet from './Sheet';
 import { useData } from '../hooks/useData';
 import { useToast } from './Toast';
 import type { Child, DayEvent, EventType, NewEvent } from '../lib/types';
-import { DIAPER_ICON, DIAPER_LABEL, FEED_ICON, FEED_LABEL, MOODS, PORTION_LABEL, TEXTURES, hhmm } from '../lib/util';
+import { DIAPER_LABEL, FEED_LABEL, MOODS, PORTION_LABEL, TEXTURES, hhmm, type IconKey } from '../lib/util';
+import { Bubble, EvIcon } from './Icon';
+import { Trash2 } from 'lucide-react';
 
-const TYPE_TITLE: Record<EventType, string> = {
-  diaper: '🧷 החלפת חיתול',
-  feed: '🍽️ אוכל',
-  sleep: '😴 שינה',
-  note: '📝 הערה',
-  attendance: '👋 נוכחות',
+const TYPE_TITLE: Record<EventType, [IconKey, string]> = {
+  diaper: ['pee', 'החלפת חיתול'],
+  feed: ['meal', 'אוכל'],
+  sleep: ['sleep', 'שינה'],
+  note: ['note', 'הערה'],
+  attendance: ['arrive', 'נוכחות'],
 };
 const BOTTLE_ML = [60, 90, 120, 150, 180, 210, 240];
 
@@ -121,8 +123,9 @@ export default function EventSheet({
       open={open}
       onClose={onClose}
       title={
-        <span>
-          {TYPE_TITLE[type]} <span className="text-muted font-medium text-base">· {who}</span>
+        <span className="flex items-center gap-2.5">
+          <Bubble k={TYPE_TITLE[type][0]} size={36} />
+          {TYPE_TITLE[type][1]} <span className="text-muted font-medium text-base">· {who}</span>
         </span>
       }
       footer={
@@ -132,7 +135,7 @@ export default function EventSheet({
           </button>
           {existing && (
             <button className="btn-danger" onClick={remove} aria-label="מחיקה">
-              🗑️ מחיקה
+              <Trash2 size={18} /> מחיקה
             </button>
           )}
         </div>
@@ -142,7 +145,7 @@ export default function EventSheet({
         {type === 'diaper' && (
           <>
             <Chips
-              options={Object.keys(DIAPER_LABEL).map((k) => ({ key: k, label: `${DIAPER_ICON[k]} ${DIAPER_LABEL[k]}` }))}
+              options={Object.keys(DIAPER_LABEL).map((k) => ({ key: k, label: DIAPER_LABEL[k], icon: <EvIcon k={k as IconKey} size={18} /> }))}
               value={subtype}
               onChange={setSubtype}
               big
@@ -158,7 +161,7 @@ export default function EventSheet({
         {type === 'feed' && (
           <>
             <Chips
-              options={Object.keys(FEED_LABEL).map((k) => ({ key: k, label: `${FEED_ICON[k]} ${FEED_LABEL[k]}` }))}
+              options={Object.keys(FEED_LABEL).map((k) => ({ key: k, label: FEED_LABEL[k], icon: <EvIcon k={k as IconKey} size={18} /> }))}
               value={subtype}
               onChange={setSubtype}
             />
@@ -193,8 +196,8 @@ export default function EventSheet({
         {type === 'attendance' && (
           <Chips
             options={[
-              { key: 'arrive', label: '👋 הגעה' },
-              { key: 'leave', label: '🏠 איסוף' },
+              { key: 'arrive', label: 'הגעה', icon: <EvIcon k="arrive" size={20} /> },
+              { key: 'leave', label: 'איסוף', icon: <EvIcon k="leave" size={20} /> },
             ]}
             value={subtype}
             onChange={setSubtype}
@@ -249,7 +252,7 @@ export function Chips({
   big,
   toggle,
 }: {
-  options: { key: string; label: string }[];
+  options: { key: string; label: string; icon?: React.ReactNode }[];
   value: string | null;
   onChange: (v: string | null) => void;
   big?: boolean;
@@ -265,6 +268,7 @@ export function Chips({
           onClick={() => onChange(toggle && value === o.key ? null : o.key)}
           aria-pressed={value === o.key}
         >
+          {o.icon && <span className={value === o.key ? 'text-brand' : 'text-muted'}>{o.icon}</span>}
           {o.label}
         </button>
       ))}
