@@ -1,6 +1,6 @@
 import { useId, type ReactNode } from 'react';
 import type { Child } from '../lib/types';
-import { EYE_COLORS, HAIR_COLORS, SKINS, lookOf, type Animal, type HairStyle, type Look } from '../lib/look';
+import { EYE_COLORS, HAIR_COLORS, SKINS, lookOf, type Animal, type HairStyle, type Look, type Print, type Toy } from '../lib/look';
 
 export type AvatarState = 'idle' | 'sleep' | 'wave';
 type AvatarChild = Pick<Child, 'color' | 'emoji' | 'gender' | 'look' | 'id'> & { name?: string };
@@ -39,7 +39,7 @@ export default function Avatar({
             <circle cx="60" cy="60" r="60" />
           </clipPath>
           <clipPath id={`f${uid}`}>
-            <ellipse cx="60" cy="68" rx="29" ry="27.5" />
+            <ellipse cx="60" cy="68" rx={look.face === 'chubby' ? 31 : 29} ry="27.5" />
           </clipPath>
           <radialGradient id={`g${uid}`} cx="50%" cy="35%" r="70%">
             <stop offset="0" stopColor="#fff" stopOpacity=".9" />
@@ -88,6 +88,8 @@ function Kid({ look, state, small, uid }: { look: Look; state: AvatarState; smal
   const has = (x: Look['extras'][number]) => look.extras.includes(x);
   const sleep = state === 'sleep';
   const wave = state === 'wave';
+  const chubby = look.face === 'chubby';
+  const mouth = look.mouth ?? 'smile';
 
   return (
     <g className={sleep ? 'av-doze' : ''}>
@@ -96,24 +98,28 @@ function Kid({ look, state, small, uid }: { look: Look; state: AvatarState; smal
       {/* body / onesie */}
       <ellipse cx="60" cy="124" rx="40" ry="24" fill={h.main} />
       <ellipse cx="60" cy="124" rx="40" ry="24" fill="none" stroke={h.dark} strokeWidth="2" opacity=".5" />
+      {!small && look.print && look.print !== 'none' && <PrintPatch print={look.print} />}
       {/* hood */}
       <circle cx="60" cy="63" r="41" fill={h.main} />
       <Ears animal={look.animal} h={h} />
       <HoodDecor animal={look.animal} h={h} />
       {/* face */}
-      <ellipse cx="60" cy="68" rx="29" ry="27.5" fill={skin} />
-      {/* ears of the kid */}
+      <ellipse cx="60" cy="68" rx={chubby ? 31 : 29} ry="27.5" fill={skin} />
+
       {/* hair fringe, clipped to face */}
       <g clipPath={`url(#f${uid})`}>
         <Hair style={look.hair} color={hair} />
         <ellipse cx="60" cy="96" rx="22" ry="6" fill={skinDark} opacity=".12" />
       </g>
       {/* hood rim */}
-      <ellipse cx="60" cy="68" rx="31" ry="29.5" fill="none" stroke={h.dark} strokeWidth="4" opacity=".55" />
+      <ellipse cx="60" cy="68" rx={chubby ? 33 : 31} ry="29.5" fill="none" stroke={h.dark} strokeWidth="4" opacity=".55" />
+      {look.hair === 'wild' && <WildCurls color={hair} small={small} />}
+      {look.hair === 'flip' && <SideFlips color={hair} />}
 
       {/* cheeks */}
-      <ellipse cx="41.5" cy="77" rx="5.5" ry="3.4" fill="#FF7B86" opacity={has('blush') ? 0.55 : 0.28} />
-      <ellipse cx="78.5" cy="77" rx="5.5" ry="3.4" fill="#FF7B86" opacity={has('blush') ? 0.55 : 0.28} />
+      <ellipse cx={chubby ? 40.5 : 41.5} cy="77.5" rx={chubby ? 7 : 5.5} ry={chubby ? 4.4 : 3.4} fill="#FF7B86" opacity={has('blush') ? 0.55 : 0.28} />
+      <ellipse cx={chubby ? 79.5 : 78.5} cy="77.5" rx={chubby ? 7 : 5.5} ry={chubby ? 4.4 : 3.4} fill="#FF7B86" opacity={has('blush') ? 0.55 : 0.28} />
+      {has('mole') && !small && <circle cx="73.5" cy="86" r="1.1" fill={shade(skin, -90)} opacity=".8" />}
       {has('freckles') && !small && (
         <g fill={skinDark} opacity=".55">
           <circle cx="40" cy="73" r=".9" />
@@ -133,8 +139,8 @@ function Kid({ look, state, small, uid }: { look: Look; state: AvatarState; smal
         </g>
       ) : (
         <>
-          <Eye cx={48} cy={67} color={eye} sparkle={look.eyes === 'sparkle'} happy={wave} />
-          <Eye cx={72} cy={67} color={eye} sparkle={look.eyes === 'sparkle'} happy={wave} />
+          <Eye cx={48} cy={67} color={eye} sparkle={look.eyes === 'sparkle'} happy={wave} lashes={has('lashes') && !small} side={-1} />
+          <Eye cx={72} cy={67} color={eye} sparkle={look.eyes === 'sparkle'} happy={wave} lashes={has('lashes') && !small} side={1} />
         </>
       )}
       {/* brows */}
@@ -160,6 +166,23 @@ function Kid({ look, state, small, uid }: { look: Look; state: AvatarState; smal
           <path d="M51.5 79.5q8.5 1.5 17 0q-1.5 9.5-8.5 9.5t-8.5-9.5z" fill="#9C3C45" />
           <path d="M55 85.6q5-3 10 0q-2 2.4-5 2.4t-5-2.4z" fill="#FF8F98" />
         </g>
+      ) : mouth === 'cheeky' ? (
+        <g>
+          <path d="M53 80.5q7 3.8 14.5-1q-.6 4.6-7.3 5.2q-5.8.2-7.2-4.2z" fill="#E68A8E" />
+          <path d="M53 80.5q7 3.8 14.5-1" fill="none" stroke="#9C3C45" strokeWidth="1.8" strokeLinecap="round" />
+        </g>
+      ) : mouth === 'open' ? (
+        <g>
+          <path d="M53.5 79.5q6.5 2 13 0q-1 6.5-6.5 6.5t-6.5-6.5z" fill="#A9434C" />
+          <path d="M56 83.8q4-1.8 8 0q-1.5 2.2-4 2.2t-4-2.2z" fill="#FF97A0" />
+        </g>
+      ) : mouth === 'grin' ? (
+        <g>
+          <path d="M51.5 79q8.5 2 17 0q-1.2 8.5-8.5 8.5t-8.5-8.5z" fill="#9C3C45" />
+          <path d="M55.5 85.2q4.5-2 9 0q-1.8 2.3-4.5 2.3t-4.5-2.3z" fill="#FF8F98" />
+          <rect x="56.6" y="84.3" width="2.8" height="2.6" rx=".9" fill="#fff" />
+          <rect x="60.6" y="84.3" width="2.8" height="2.6" rx=".9" fill="#fff" />
+        </g>
       ) : (
         <path d="M53.5 80q6.5 5.5 13 0" fill="none" stroke="#9C3C45" strokeWidth="2.3" strokeLinecap="round" />
       )}
@@ -173,6 +196,7 @@ function Kid({ look, state, small, uid }: { look: Look; state: AvatarState; smal
         </g>
       )}
       {has('bow') && <Bow x={83} y={41} />}
+      {!small && look.toy && look.toy !== 'none' && <ToyProp toy={look.toy} skin={skin} skinDark={skinDark} />}
 
       {/* waving hand */}
       {wave && !small && (
@@ -197,7 +221,7 @@ function Kid({ look, state, small, uid }: { look: Look; state: AvatarState; smal
   );
 }
 
-function Eye({ cx, cy, color, sparkle, happy }: { cx: number; cy: number; color: string; sparkle: boolean; happy: boolean }) {
+function Eye({ cx, cy, color, sparkle, happy, lashes, side }: { cx: number; cy: number; color: string; sparkle: boolean; happy: boolean; lashes?: boolean; side: number }) {
   if (happy)
     return <path d={`M${cx - 5} ${cy + 2}q5-6.5 10 0`} fill="none" stroke="#3A2A24" strokeWidth="2.6" strokeLinecap="round" />;
   const r = sparkle ? 5.4 : 4.6;
@@ -207,6 +231,14 @@ function Eye({ cx, cy, color, sparkle, happy }: { cx: number; cy: number; color:
       <ellipse cx={cx} cy={cy} rx={r} ry={r * 1.12} fill="none" stroke="#1E1714" strokeOpacity=".35" strokeWidth="1" />
       <circle cx={cx - r * 0.35} cy={cy - r * 0.4} r={r * 0.36} fill="#fff" />
       {sparkle && <circle cx={cx + r * 0.38} cy={cy + r * 0.38} r={r * 0.17} fill="#fff" opacity=".9" />}
+      {lashes && (
+        <path
+          d={`M${cx + side * r * 0.62} ${cy - r * 0.92}l${side * 1.3} -1.7M${cx + side * r * 0.92} ${cy - r * 0.55}l${side * 1.7} -1.2`}
+          stroke="#2C221E"
+          strokeWidth="1.3"
+          strokeLinecap="round"
+        />
+      )}
     </g>
   );
 }
@@ -225,6 +257,29 @@ function Hair({ style, color }: { style: HairStyle; color: string }) {
   const hi = shade(color, 40);
   const paths: Record<HairStyle, ReactNode> = {
     none: null,
+    baby: (
+      <g fill="none" stroke={color} strokeLinecap="round">
+        <path d="M33 58Q36 41 60 39Q84 41 87 58Q82 47 60 45Q38 47 33 58Z" fill={color} stroke="none" opacity=".92" />
+        <path d="M50 46q4-5 9-4M58 44q5-4 10-1M44 49q3-4 7-4" strokeWidth="1.4" opacity=".8" />
+        <path d="M60 41q1.5-5 5-6.5M56 41q-1-4.5 1.5-7" strokeWidth="1.3" />
+      </g>
+    ),
+    flip: (
+      <>
+        <path d="M29 64Q27 37 60 36Q91 37 92 58Q84 46 66 47Q50 48 41 57Q35 62 29 64Z" fill={color} />
+        <path d="M54 42q12-3 24 3" stroke={shade(color, 45)} strokeWidth="2" fill="none" strokeLinecap="round" opacity=".55" />
+      </>
+    ),
+    wild: (
+      <g fill={color}>
+        <path d="M30 58Q31 38 60 37Q89 38 90 58Z" />
+        {[34, 43, 52, 61, 70, 79, 87].map((x, i) => (
+          <circle key={x} cx={x} cy={i % 2 ? 51 : 55} r="6.6" />
+        ))}
+        <circle cx="47" cy="59" r="4.6" />
+        <circle cx="68" cy="58.5" r="4" />
+      </g>
+    ),
     short: (
       <>
         <path d="M28 64Q30 38 60 37Q90 38 92 64Q86 53 76 55Q70 49 61 54Q52 48 45 55Q35 52 28 64Z" fill={color} />
@@ -416,7 +471,140 @@ function HoodDecor({ animal, h }: { animal: Animal; h: (typeof HOOD)[Animal] }) 
         <path d="M86 38q8 12 4 26q-3-6-8-8q4-8 4-18z" fill="#F9B6D2" />
       </g>
     );
-  if (animal === 'chick')
-    return <path d="M56 106l4 5l4-5z" fill="#F29A2E" />;
   return null;
+}
+
+/** Big curls that spill out of the hood (drawn above the hood rim). */
+function WildCurls({ color, small }: { color: string; small: boolean }) {
+  const hi = shade(color, 45);
+  const curls: [number, number, number][] = [
+    [32, 46, 7.5], [40, 37, 8], [50, 32, 8], [61, 30, 8.5], [72, 32, 8], [81, 38, 7.5], [88, 47, 7],
+    [29, 58, 6.5], [91, 58, 6.5],
+  ];
+  return (
+    <g>
+      {curls.map(([x, y, r], i) => (
+        <circle key={i} cx={x} cy={y} r={r} fill={color} />
+      ))}
+      {!small && (
+        <g fill="none" stroke={hi} strokeWidth="1.6" strokeLinecap="round" opacity=".7">
+          {curls.map(([x, y, r], i) => (
+            <path key={i} d={`M${x - r * 0.45} ${y + r * 0.1}a${r * 0.42} ${r * 0.42} 0 1 1 ${r * 0.5} ${r * 0.35}`} />
+          ))}
+        </g>
+      )}
+      {/* springy side ringlets */}
+      <path d="M27 66q-5 4 0 8q5 4 0 8" fill="none" stroke={color} strokeWidth="3.6" strokeLinecap="round" />
+      <path d="M93 66q5 4 0 8q-5 4 0 8" fill="none" stroke={color} strokeWidth="3.6" strokeLinecap="round" />
+    </g>
+  );
+}
+
+/** Little print on the onesie chest. */
+function PrintPatch({ print }: { print: Print }) {
+  switch (print) {
+    case 'helicopter':
+      return (
+        <g transform="translate(60 109)" fill="none" stroke="#3B4A5A" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M-9-6.5h18M0-6.5v2.5" />
+          <path d="M-6 1a5 5 0 0 1 5-5h3a5 5 0 0 1 5 5v0a3 3 0 0 1-3 3h-7a3 3 0 0 1-3-3z" fill="#fff" />
+          <path d="M7 0h6.5l1.5-2.5M-5 4.5v2M3 4.5v2M-7.5 6.5h12" />
+        </g>
+      );
+    case 'stripes':
+      return (
+        <g opacity=".85">
+          {[103, 109, 115].map((y) => (
+            <rect key={y} x="30" y={y} width="60" height="2.6" rx="1.3" fill="#B9A58C" />
+          ))}
+        </g>
+      );
+    case 'skate':
+      return (
+        <g transform="translate(60 109)">
+          <rect x="-10" y="-3" width="20" height="5" rx="2.5" fill="#F09B7A" stroke="#3B4A5A" strokeWidth="1.1" />
+          <circle cx="-6" cy="4" r="2" fill="#fff" stroke="#3B4A5A" strokeWidth="1.1" />
+          <circle cx="6" cy="4" r="2" fill="#fff" stroke="#3B4A5A" strokeWidth="1.1" />
+        </g>
+      );
+    case 'stars':
+      return (
+        <g fill="#FFD25E" stroke="#E8A93A" strokeWidth=".8">
+          {[[48, 108], [60, 113], [72, 107]].map(([x, y]) => (
+            <path key={x} transform={`translate(${x} ${y})`} d="M0-4l1.2 2.6 2.8.3-2.1 1.9.6 2.8L0 2.2l-2.5 1.4.6-2.8-2.1-1.9 2.8-.3z" />
+          ))}
+        </g>
+      );
+    case 'hearts':
+      return (
+        <g fill="#FF7FA0">
+          {[[49, 109], [60, 113], [71, 108]].map(([x, y]) => (
+            <path key={x} transform={`translate(${x} ${y})`} d="M0 3s-4-2.5-4-5a2.2 2.2 0 0 1 4-1.2A2.2 2.2 0 0 1 4-2c0 2.5-4 5-4 5z" />
+          ))}
+        </g>
+      );
+    default:
+      return null;
+  }
+}
+
+/** Side-swept hair whose ends flip out past the hood. */
+function SideFlips({ color }: { color: string }) {
+  return (
+    <g fill={color}>
+      <path d="M31 62q-7 8-5 17q3-6 8-7q-4-4-3-10z" />
+      <path d="M89 62q7 8 5 17q-3-6-8-7q4-4 3-10z" />
+    </g>
+  );
+}
+
+/** A favourite toy held at the bottom of the frame. */
+function ToyProp({ toy, skin, skinDark }: { toy: Toy; skin: string; skinDark: string }) {
+  const hand = <ellipse cx="0" cy="6" rx="6.5" ry="5.5" fill={skin} stroke={skinDark} strokeWidth="1.1" />;
+  switch (toy) {
+    case 'teether':
+      return (
+        <g transform="translate(35 95) rotate(-12)">
+          {[0, 60, 120, 180, 240, 300].map((a) => (
+            <circle key={a} cx={Math.cos((a * Math.PI) / 180) * 7} cy={Math.sin((a * Math.PI) / 180) * 7} r="4.4" fill="none" stroke="#E2463E" strokeWidth="2.6" />
+          ))}
+          <circle r="5" fill="#3CC3C9" />
+          <circle r="3.2" fill="#9B6BDB" />
+          <g transform="translate(4 6)">{hand}</g>
+        </g>
+      );
+    case 'book':
+      return (
+        <g transform="translate(35 96) rotate(-8)">
+          <rect x="-11" y="-8" width="11" height="15" rx="2" fill="#7FD0F0" stroke="#2E2B2B" strokeWidth="1" />
+          <rect x="0" y="-8" width="11" height="15" rx="2" fill="#F7A23A" stroke="#2E2B2B" strokeWidth="1" />
+          <circle cx="5.5" cy="-.5" r="3.6" fill="#8CD06A" stroke="#4E9A3A" strokeWidth=".8" />
+          <path d="M-9-2q2-3 5-2t4 2" fill="none" stroke="#fff" strokeWidth="1.4" strokeLinecap="round" />
+          <g transform="translate(-3 6)">{hand}</g>
+        </g>
+      );
+    case 'rattle':
+      return (
+        <g transform="translate(34 97) rotate(-25)">
+          <rect x="-1.6" y="-2" width="3.2" height="12" rx="1.6" fill="#FFC94D" />
+          <circle cy="-6" r="6.5" fill="#FF8FB1" stroke="#E2648B" strokeWidth="1" />
+          <circle cx="-2" cy="-8" r="1.6" fill="#fff" opacity=".8" />
+          <g transform="translate(0 5)">{hand}</g>
+        </g>
+      );
+    case 'teddy':
+      return (
+        <g transform="translate(34 96)">
+          <circle cx="-5.5" cy="-8" r="3" fill="#B98559" />
+          <circle cx="5.5" cy="-8" r="3" fill="#B98559" />
+          <circle r="8" cy="-2" fill="#C99566" />
+          <circle cx="-2.6" cy="-3" r="1.1" fill="#2E2B2B" />
+          <circle cx="2.6" cy="-3" r="1.1" fill="#2E2B2B" />
+          <ellipse cy="1" rx="3" ry="2.2" fill="#EBCBA6" />
+          <g transform="translate(2 8)">{hand}</g>
+        </g>
+      );
+    default:
+      return null;
+  }
 }

@@ -11,20 +11,27 @@ import {
   HAIR_COLORS,
   HAIR_COLOR_LABELS,
   HAIR_STYLES,
+  FACES,
+  MOUTHS,
+  PRINTS,
+  TOYS,
   SKINS,
   lookOf,
   randomLook,
   type Look,
 } from '../lib/look';
 
-type Tab = 'animal' | 'skin' | 'hair' | 'hairColor' | 'eyes' | 'extras';
+type Tab = 'animal' | 'skin' | 'face' | 'hair' | 'hairColor' | 'eyes' | 'extras' | 'print' | 'toy';
 const TABS: [Tab, string][] = [
   ['animal', 'חיה'],
   ['skin', 'עור'],
+  ['face', 'פנים וחיוך'],
   ['hair', 'שיער'],
   ['hairColor', 'צבע שיער'],
   ['eyes', 'עיניים'],
   ['extras', 'תוספות'],
+  ['print', 'הדפס'],
+  ['toy', 'צעצוע'],
 ];
 
 export default function AvatarEditor({ child, open, onClose, onSave }: { child: Child; open: boolean; onClose: () => void; onSave: (look: Look) => void | Promise<void> }) {
@@ -98,6 +105,13 @@ export default function AvatarEditor({ child, open, onClose, onSave }: { child: 
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-3 pb-2">
         {tab === 'animal' && ANIMALS.map((a) => mini({ animal: a.key }, a.key, a.label, look.animal === a.key))}
         {tab === 'skin' && SKINS.map((s, i) => mini({ skin: i }, s, `גוון ${i + 1}`, look.skin === i))}
+        {tab === 'face' &&
+          [
+            ...FACES.map((f) => mini({ face: f.key }, f.key, f.label, (look.face ?? 'round') === f.key)),
+            ...MOUTHS.map((m) => mini({ mouth: m.key }, m.key, m.label, (look.mouth ?? 'smile') === m.key)),
+          ]}
+        {tab === 'print' && PRINTS.map((x) => mini({ print: x.key }, x.key, x.label, (look.print ?? 'none') === x.key))}
+        {tab === 'toy' && TOYS.map((x) => mini({ toy: x.key }, x.key, x.label, (look.toy ?? 'none') === x.key))}
         {tab === 'hair' && HAIR_STYLES.map((h) => mini({ hair: h.key }, h.key, h.label, look.hair === h.key))}
         {tab === 'hairColor' && HAIR_COLORS.map((c, i) => mini({ hairColor: i }, c, HAIR_COLOR_LABELS[i], look.hairColor === i))}
         {tab === 'eyes' &&

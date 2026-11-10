@@ -1,8 +1,12 @@
 import type { Child } from './types';
 
 export type Animal = 'lion' | 'bunny' | 'butterfly' | 'bear' | 'chick' | 'whale' | 'fox' | 'panda' | 'frog' | 'unicorn' | 'koala' | 'ladybug';
-export type HairStyle = 'none' | 'short' | 'curly' | 'swoop' | 'bangs' | 'tuft';
-export type Extra = 'glasses' | 'freckles' | 'bow' | 'pacifier' | 'blush';
+export type HairStyle = 'none' | 'short' | 'curly' | 'swoop' | 'bangs' | 'tuft' | 'baby' | 'wild' | 'flip';
+export type Mouth = 'smile' | 'cheeky' | 'grin' | 'open';
+export type Toy = 'none' | 'teether' | 'book' | 'rattle' | 'teddy';
+export type Face = 'round' | 'chubby';
+export type Print = 'none' | 'helicopter' | 'stripes' | 'skate' | 'stars' | 'hearts';
+export type Extra = 'glasses' | 'freckles' | 'bow' | 'pacifier' | 'blush' | 'lashes' | 'mole';
 
 export interface Look {
   animal: Animal;
@@ -12,6 +16,10 @@ export interface Look {
   eyes: 'round' | 'sparkle';
   eyeColor: number;
   extras: Extra[];
+  face?: Face;
+  mouth?: Mouth;
+  print?: Print;
+  toy?: Toy;
 }
 
 export const ANIMALS: { key: Animal; emoji: string; label: string }[] = [
@@ -40,6 +48,9 @@ export const HAIR_STYLES: { key: HairStyle; label: string }[] = [
   { key: 'swoop', label: 'הצידה' },
   { key: 'curly', label: 'מתולתל' },
   { key: 'tuft', label: 'קווצה' },
+  { key: 'baby', label: 'שיער תינוק' },
+  { key: 'wild', label: 'תלתלים פרועים' },
+  { key: 'flip', label: 'פוני עם קצוות' },
   { key: 'none', label: 'בלי' },
 ];
 export const EXTRAS: { key: Extra; label: string }[] = [
@@ -48,6 +59,8 @@ export const EXTRAS: { key: Extra; label: string }[] = [
   { key: 'glasses', label: 'משקפיים' },
   { key: 'bow', label: 'סרט' },
   { key: 'pacifier', label: 'מוצץ' },
+  { key: 'lashes', label: 'ריסים' },
+  { key: 'mole', label: 'נקודת חן' },
 ];
 
 export const animalByEmoji = (emoji: string): Animal => ANIMALS.find((a) => a.emoji === emoji)?.key ?? 'bear';
@@ -81,3 +94,29 @@ export function randomLook(base: Look): Look {
     extras: EXTRAS.filter(() => Math.random() < 0.3).map((e) => e.key),
   };
 }
+
+export const FACES: { key: Face; label: string }[] = [
+  { key: 'round', label: 'עגול' },
+  { key: 'chubby', label: 'לחיים שמנמנות' },
+];
+export const MOUTHS: { key: Mouth; label: string }[] = [
+  { key: 'smile', label: 'חיוך' },
+  { key: 'cheeky', label: 'חיוך שובב' },
+  { key: 'grin', label: 'חיוך עם שיניים' },
+  { key: 'open', label: 'פה פתוח' },
+];
+export const PRINTS: { key: Print; label: string }[] = [
+  { key: 'none', label: 'חלק' },
+  { key: 'helicopter', label: 'מסוק' },
+  { key: 'stripes', label: 'פסים' },
+  { key: 'skate', label: 'סקייטבורד' },
+  { key: 'stars', label: 'כוכבים' },
+  { key: 'hearts', label: 'לבבות' },
+];
+export const TOYS: { key: Toy; label: string }[] = [
+  { key: 'none', label: 'בלי' },
+  { key: 'teether', label: 'נשכן פרח' },
+  { key: 'book', label: 'ספר בד' },
+  { key: 'rattle', label: 'רעשן' },
+  { key: 'teddy', label: 'דובי' },
+];
