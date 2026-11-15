@@ -84,6 +84,13 @@ export interface Reminder {
 export interface Settings {
   daycare_name: string;
   caregiver_name: string;
+  /** U3: days the daycare is closed (yyyy-MM-dd), shown to parents in advance. */
+  closed_days?: ClosedDay[];
+}
+
+export interface ClosedDay {
+  date: string;
+  note?: string;
 }
 
 export type NewEvent = Omit<DayEvent, 'id' | 'created_at'>;

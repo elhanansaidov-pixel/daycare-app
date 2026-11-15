@@ -7,6 +7,7 @@ import Timeline from '../components/Timeline';
 import DayNav from '../components/DayNav';
 import SuppliesCard from '../components/SuppliesCard';
 import { pilotOn } from '../lib/pilots';
+import { ClosedDaysForParents } from '../components/ClosedDays';
 import { birthdayTitle, isBirthday, nextBirthday } from '../lib/birthday';
 import { PhotoGrid } from './Gallery';
 import { ageLabel, avatarState, childWord, clockDuration, durationLabel, lastOf, openSleep, presence } from '../lib/util';
@@ -120,6 +121,7 @@ export default function ParentPortal({ preview }: { preview?: boolean }) {
           )}
 
           {pilotOn('U1') && <SuppliesCard child={child} readOnly />}
+          {pilotOn('U3') && <ClosedDaysForParents />}
 
           <div className="segmented">
             {(

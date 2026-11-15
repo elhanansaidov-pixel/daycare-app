@@ -7,6 +7,7 @@ export const ADMIN_EMAILS = ['elhanansaidov@gmail.com'];
 export const PILOTS: [string, string, string][] = [
   ['U1', '🛍️', 'מה חסר'],
   ['U2', '🎂', 'ימי הולדת'],
+  ['U3', '📅', 'ימים שהמשפחתון סגור'],
 ];
 
 const OFF_KEY = 'daycare.pilotsOff';

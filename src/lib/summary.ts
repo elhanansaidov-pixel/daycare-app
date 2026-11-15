@@ -3,6 +3,7 @@ import { he } from 'date-fns/locale';
 import type { Child, DayEvent, Photo, Settings } from './types';
 import { pilotOn } from './pilots';
 import { birthdayTitle, nextBirthday } from './birthday';
+import { closedOn, nextWorkday } from './closedDays';
 import { DIAPER_ICON, DIAPER_LABEL, FEED_ICON, FEED_LABEL, durationLabel, hhmm, moodFor, portionFor } from './util';
 
 export function buildSummary(c: Child, events: DayEvent[], photos: Photo[], day: Date, s: Settings): string {
@@ -64,6 +65,9 @@ export function buildSummary(c: Child, events: DayEvent[], photos: Photo[], day:
 
   const bd = pilotOn('U2') ? nextBirthday(c.birth_date, day) : null;
   if (bd && bd.days === 0) L.push('', `🎂 *היום חגגנו ${birthdayTitle(c, bd.age)}!* מזל טוב 🎉`);
+
+  const off = pilotOn('U3') ? closedOn(s, nextWorkday(day)) : undefined;
+  if (off) L.push('', `📅 *תזכורת:* ${nextWorkday(day).getDay() === 0 ? 'ביום ראשון' : 'מחר'} המשפחתון סגור${off.note ? ` (${off.note})` : ''}.`);
 
   const need = pilotOn('U1') ? (c.supplies ?? []) : [];
   if (need.length) {
