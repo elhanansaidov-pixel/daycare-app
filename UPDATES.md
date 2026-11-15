@@ -2,7 +2,7 @@
 
 - **אתר:** https://elhanansaidov-pixel.github.io/daycare-app/ · **ריפו:** elhanansaidov-pixel/daycare-app · **ענף שעולה לאתר:** `main` (כל push ל-main מפרסם דרך GitHub Actions)
 - **Supabase:** `fmhwsgykqdjtwsqtjvag` · **מנהל (רואה פיילוטים):** elhanansaidov@gmail.com
-- **לוח עדכונים חי:** (קישור יתווסף)
+- **לוח עדכונים חי:** https://claude.ai/artifact/5qTkiJLwCSz8VdEHrQKK2P
 
 סטטוסים: 💡 רעיון · 🔨 בעבודה · 🧪 בפיילוט באתר (רק אצלי) · ✅ מוכן להעלאה · 🚀 עלה לכולם · ✖️ נדחה
 
