@@ -51,11 +51,11 @@ const check = (ok, name) => {
     await page.waitForTimeout(500);
     check((await page.getByText('מה להביא מחר').count()) === 1, 'U1: parent portal shows what to bring');
 
-    // U4 pilot: the assistant ("העוזרת של ברכה")
+    // U4: the assistant ("העוזרת של ברכה")
     await page.goto(URL + '#/');
     await page.waitForSelector('article');
     const help = page.getByRole('button', { name: 'עזרה' });
-    check((await help.count()) === 1, 'U4: help button shown while pilot is on');
+    check((await help.count()) === 1, 'U4: help button shown');
     check((await page.getByTestId('tip-bubble').getByText('אני העוזרת שלך').count()) === 1, 'U4: welcome tip shown on first visit');
     await help.click();
     await page.getByLabel('שאלה לעוזרת').fill('טעיתי');
@@ -78,11 +78,6 @@ const check = (ok, name) => {
     }
     await sleep(300);
     check((await page.getByTestId('tip-bubble').getByText('לכמה ילדים').count()) === 1, 'U4: multi-select tip after 5 separate logs');
-    await page.evaluate(() => localStorage.setItem('daycare.pilotsOff', '["U4"]'));
-    await page.reload();
-    await page.waitForSelector('article');
-    check((await page.getByRole('button', { name: 'עזרה' }).count()) === 0, 'U4: help button hidden when pilot is off');
-    await page.evaluate(() => localStorage.removeItem('daycare.pilotsOff'));
 
     await page.goto(URL + '#/settings');
     await page.waitForSelector('text=פיילוטים');
