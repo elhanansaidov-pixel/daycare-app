@@ -59,6 +59,12 @@ export function buildSummary(c: Child, events: DayEvent[], photos: Photo[], day:
   if (pics) L.push('', `📷 צולמו היום ${pics === 1 ? 'תמונה אחת' : `${pics} תמונות`}`);
 
   if (ev.length === 0 && !pics) L.push('', 'לא תועדו פעילויות היום.');
+
+  const need = c.supplies ?? [];
+  if (need.length) {
+    L.push('', '🛍️ *מה להביא מחר*');
+    for (const it of need) L.push(`• ${it.text}`);
+  }
   L.push('', `באהבה${s.caregiver_name ? `, ${s.caregiver_name}` : ''} 💛${s.daycare_name ? ` · ${s.daycare_name}` : ''}`);
   return L.join('\n');
 }

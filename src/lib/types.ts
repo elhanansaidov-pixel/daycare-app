@@ -18,6 +18,14 @@ export interface Child {
   sort: number;
   invite_code?: string;
   look?: Partial<Look> | null; // cartoon avatar description
+  supplies?: SupplyItem[] | null; // "מה חסר" – things parents should bring
+}
+
+/** Item the parents should bring (diapers, wipes...). Removed once it arrives. */
+export interface SupplyItem {
+  id: string;
+  text: string;
+  added_at: string; // ISO
 }
 
 export interface Guardian {

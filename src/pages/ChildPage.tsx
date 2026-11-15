@@ -8,6 +8,7 @@ import DayNav from '../components/DayNav';
 import EventSheet from '../components/EventSheet';
 import PhotoSheet from '../components/PhotoSheet';
 import ChildForm from '../components/ChildForm';
+import SuppliesCard from '../components/SuppliesCard';
 import { ageLabel, avatarState, telLink, waLink } from '../lib/util';
 import { buildSummary } from '../lib/summary';
 import type { EventType } from '../lib/types';
@@ -107,6 +108,7 @@ export default function ChildPage() {
                 <Pin size={16} className="text-brand shrink-0 mt-0.5" /> {child.notes}
               </p>
             )}
+            <SuppliesCard child={child} />
             <div className="card p-3">
               <Timeline child={child} events={evs} photos={photos} day={day} emptyText={isToday(day) ? 'עוד לא תועד כלום היום' : 'אין תיעוד ליום הזה'} />
             </div>

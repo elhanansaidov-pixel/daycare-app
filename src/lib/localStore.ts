@@ -85,7 +85,15 @@ export function createLocalStore(): Store {
       return read<Child[]>('children', []).sort((a, b) => a.sort - b.sort);
     },
     async saveChild(c) {
-      return upsert('children', c);
+      const prev = read<Child[]>('children', []).find((x) => x.id === c.id);
+      return upsert('children', { ...c, supplies: prev?.supplies ?? [] });
+    },
+    async saveSupplies(childId, items) {
+      write(
+        'children',
+        read<Child[]>('children', []).map((x) => (x.id === childId ? { ...x, supplies: items } : x)),
+      );
+      emit();
     },
     async listGuardians() {
       return read<Guardian[]>('guardians', []);
