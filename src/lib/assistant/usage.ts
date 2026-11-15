@@ -1,7 +1,6 @@
 // U4 usage log: what the caregiver does in the app, so the assistant can learn her habits.
 // Only action types and counts are recorded – never child names or event content.
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { pilotOn } from '../pilots';
 
 export type UsageKind = 'screen' | 'action' | 'undo' | 'help_q' | 'help_miss' | 'tour' | 'tip';
 export interface UsageEntry {
@@ -37,7 +36,6 @@ export function readUsage(): UsageEntry[] {
 }
 
 export function track(kind: UsageKind, detail = '') {
-  if (!pilotOn('U4')) return;
   const e: UsageEntry = { kind, detail: detail.slice(0, 200), at: Date.now() };
   try {
     localStorage.setItem(KEY, JSON.stringify([...readUsage(), e].slice(-MAX)));
