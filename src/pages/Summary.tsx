@@ -7,6 +7,7 @@ import { useToast } from '../components/Toast';
 import { buildSummary } from '../lib/summary';
 import { Check, Copy, MessageCircleHeart, Send } from 'lucide-react';
 import { waLink } from '../lib/util';
+import { track } from '../lib/assistant/usage';
 
 export default function Summary() {
   const { children, guardians, settings } = useData();
@@ -27,7 +28,7 @@ export default function Summary() {
           const key = c.id + day.toDateString();
           const count = events.filter((e) => e.child_id === c.id).length;
           return (
-            <article key={c.id} className="card p-4">
+            <article key={c.id} className="card p-4" data-help="summary-card">
               <div className="flex items-center gap-3">
                 <Avatar child={c} size={44} />
                 <div className="flex-1">
@@ -43,7 +44,7 @@ export default function Summary() {
               {open === c.id && (
                 <pre className="mt-3 whitespace-pre-wrap font-sans text-sm bg-[#DCF8C6] text-[#111] rounded-2xl rounded-tr-sm p-3 leading-relaxed anim-pop">{text}</pre>
               )}
-              <div className="flex flex-wrap gap-2 mt-3">
+              <div className="flex flex-wrap gap-2 mt-3" data-help="summary-send">
                 {gs.map((g) => (
                   <a
                     key={g.id}
@@ -51,7 +52,7 @@ export default function Summary() {
                     target="_blank"
                     rel="noreferrer"
                     className="btn bg-[#25D366] text-white flex-1 min-w-[9rem]"
-                    onClick={() => setSent((s) => ({ ...s, [key]: true }))}
+                    onClick={() => (setSent((s) => ({ ...s, [key]: true })), track('action', 'summary:wa|1'))}
                   >
                     <Send size={16} /> שליחה ל{g.relation || g.name}
                   </a>
@@ -60,6 +61,7 @@ export default function Summary() {
                   className="btn-ghost flex-1 min-w-[7rem]"
                   onClick={async () => {
                     await navigator.clipboard.writeText(text);
+                    track('action', 'summary:copy|1');
                     toast({ text: 'הועתק, אפשר להדביק בוואטסאפ', icon: '📋' });
                   }}
                 >

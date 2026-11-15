@@ -19,6 +19,7 @@ import { getRole, redeemInvite, setPendingInvite, takePendingInvite, type Role }
 import { useReminderTicker } from './hooks/useAlerts';
 import Logo from './components/Logo';
 import { setAdmin } from './lib/pilots';
+import { configureUsage } from './lib/assistant/usage';
 
 function ReminderRunner() {
   const toast = useToast();
@@ -82,6 +83,7 @@ function CloudApp() {
       return;
     }
     setAdmin(session.user.email);
+    configureUsage(supabase);
     (async () => {
       const r = await getRole();
       const code = takePendingInvite();

@@ -106,7 +106,7 @@ export default function Settings() {
 
         <PilotsSection />
 
-        <section className="card p-4">
+        <section className="card p-4" data-help="settings-children">
           <div className="flex items-center justify-between mb-2">
             <h2 className="font-bold text-lg">ילדים ({active.length})</h2>
             <button className="btn-ghost !min-h-[40px]" onClick={() => setNewChild(true)}>
@@ -137,7 +137,7 @@ export default function Settings() {
           )}
         </section>
 
-        <section className="card p-4">
+        <section className="card p-4" data-help="settings-reminders">
           <div className="flex items-center justify-between mb-2">
             <h2 className="section-title"><AlarmClock size={20} className="text-brand" /> תזכורות</h2>
             <button
@@ -201,7 +201,7 @@ export default function Settings() {
               מצב מקומי: הנתונים נשמרים רק בדפדפן של המכשיר הזה. אחרי חיבור ל-Supabase הם יישמרו בענן, יסונכרנו בין מכשירים ויופיעו להורים בפורטל.
             </p>
           )}
-          <details className="rounded-2xl bg-sunk p-3 text-sm">
+          <details className="rounded-2xl bg-sunk p-3 text-sm" data-help="settings-install">
             <summary className="font-semibold cursor-pointer inline-flex items-center gap-2"><Smartphone size={16} /> איך מתקינים כאפליקציה בטלפון?</summary>
             <p className="mt-2">
               <b>אייפון (Safari):</b> כפתור השיתוף ⬆️ ← ״הוספה למסך הבית״.

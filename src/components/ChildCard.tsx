@@ -54,7 +54,7 @@ export default function ChildCard({
             {selected && <Check size={16} strokeWidth={3} />}
           </div>
         )}
-        <Link to={`/child/${child.id}`} className="flex items-center gap-3 flex-1 min-w-0" onClick={(e) => selectMode && e.preventDefault()}>
+        <Link to={`/child/${child.id}`} className="flex items-center gap-3 flex-1 min-w-0" data-help="child-link" onClick={(e) => selectMode && e.preventDefault()}>
           <Avatar child={child} size={58} state={avatarState(events, now)} />
           <div className="min-w-0">
             <h3 className="text-xl font-bold leading-tight truncate">{child.name}</h3>
@@ -70,6 +70,7 @@ export default function ChildCard({
             if (!selectMode) act.attendance([child], pres === 'in' ? 'leave' : 'arrive');
           }}
           title={pres === 'in' ? 'סמן איסוף' : 'סמן הגעה'}
+          data-help="arrive"
         >
           {pres === 'in' ? (
             <>
@@ -116,11 +117,11 @@ export default function ChildCard({
 
       {!selectMode && (
         <div className="relative grid grid-cols-5 gap-1.5 p-3 pt-1">
-          <QuickBtn k="pee" label="פיפי" onClick={() => act.diaper([child], 'pee')} />
+          <QuickBtn help="quick-pee" k="pee" label="פיפי" onClick={() => act.diaper([child], 'pee')} />
           <QuickBtn k="poop" label="קקי" onClick={() => act.diaper([child], 'poop')} />
-          <QuickBtn k="bottle" label="אוכל" onClick={onFeed} />
-          <QuickBtn k={sleep ? 'wake' : 'sleep'} label={sleep ? childWord(child, 'התעורר', 'התעוררה') : 'שינה'} onClick={() => act.sleep([child])} active={!!sleep} />
-          <QuickBtn k="photo" label="תמונה" onClick={onPhoto} icon={<Camera size={22} />} />
+          <QuickBtn help="quick-feed" k="bottle" label="אוכל" onClick={onFeed} />
+          <QuickBtn help="quick-sleep" k={sleep ? 'wake' : 'sleep'} label={sleep ? childWord(child, 'התעורר', 'התעוררה') : 'שינה'} onClick={() => act.sleep([child])} active={!!sleep} />
+          <QuickBtn help="quick-photo" k="photo" label="תמונה" onClick={onPhoto} icon={<Camera size={22} />} />
         </div>
       )}
     </article>
@@ -140,9 +141,10 @@ function Stat({ k, label, value, sub, alert }: { k: IconKey; label: string; valu
   );
 }
 
-function QuickBtn({ k, label, onClick, active, icon }: { k: IconKey; label: string; onClick: () => void; active?: boolean; icon?: React.ReactNode }) {
+function QuickBtn({ k, label, onClick, active, icon, help }: { help?: string; k: IconKey; label: string; onClick: () => void; active?: boolean; icon?: React.ReactNode }) {
   return (
     <button
+      data-help={help}
       className={`tile !min-h-[62px] ${active ? '!bg-sleep/20' : ''}`}
       style={{ color: `rgb(var(--${k === 'photo' ? 'photo' : k === 'wake' ? 'warn' : k === 'pee' ? 'pee' : k === 'poop' ? 'poop' : k === 'sleep' ? 'sleep' : 'feed'}))` }}
       onClick={(e) => {

@@ -17,6 +17,7 @@ import type { EventType } from '../lib/types';
 import type { IconKey } from '../lib/util';
 import { Bubble } from '../components/Icon';
 import { ArrowRight, BookOpen, IdCard, MessageCircle, Phone, Pill, Pin, TriangleAlert } from 'lucide-react';
+import { track } from '../lib/assistant/usage';
 
 export default function ChildPage() {
   const { id } = useParams();
@@ -56,6 +57,7 @@ export default function ChildPage() {
                 rel="noreferrer"
                 className="h-12 w-12 grid place-items-center rounded-full bg-card shadow-soft text-[#25A55F] active:scale-90 transition"
                 aria-label="שליחת סיכום בוואטסאפ"
+                onClick={() => track('action', 'summary:wa|1')}
               >
                 <MessageCircle size={20} />
               </a>
@@ -68,7 +70,7 @@ export default function ChildPage() {
             {child.medications && <span className="badge-warn !text-sm !px-3"><Pill size={14} /> {child.medications}</span>}
           </div>
         )}
-        <div className="segmented mt-4">
+        <div className="segmented mt-4" data-help="child-tabs">
           {(
             [
               ['log', 'יומן', BookOpen],
@@ -112,7 +114,7 @@ export default function ChildPage() {
               </p>
             )}
             {pilotOn('U1') && <SuppliesCard child={child} />}
-            <div className="card p-3">
+            <div className="card p-3" data-help="timeline">
               <Timeline child={child} events={evs} photos={photos} day={day} emptyText={isToday(day) ? 'עוד לא תועד כלום היום' : 'אין תיעוד ליום הזה'} />
             </div>
           </>

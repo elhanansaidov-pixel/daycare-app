@@ -93,6 +93,7 @@ export default function Dashboard() {
           </div>
           <div className="flex-1" />
           <button
+            data-help="multi"
             className={`chip ${selectMode ? 'chip-on' : ''}`}
             onClick={() => (selectMode ? exitSelect() : setSelectMode(true))}
           >
@@ -163,7 +164,7 @@ export default function Dashboard() {
 
       {selectMode && (
         <div className="fixed inset-x-0 bottom-[72px] z-40 px-3 anim-up">
-          <div className="max-w-3xl mx-auto card shadow-lift p-3">
+          <div className="max-w-3xl mx-auto card shadow-lift p-3" data-help="multi-bar">
             <div className="flex items-center justify-between mb-2">
               <p className="font-semibold">
                 נבחרו {selected.length} {selected.length === 1 ? 'ילד' : 'ילדים'}
