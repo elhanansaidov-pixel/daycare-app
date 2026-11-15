@@ -3,6 +3,7 @@ import { useData } from './useData';
 import { useToast } from '../components/Toast';
 import type { Child, DayEvent, NewEvent } from '../lib/types';
 import { childWord, DIAPER_LABEL, FEED_LABEL, openSleep } from '../lib/util';
+import { track } from '../lib/assistant/usage';
 
 const names = (kids: Child[]) => (kids.length === 1 ? kids[0].name : `${kids.length} ילדים`);
 
@@ -14,11 +15,13 @@ export function useActions() {
     async (events: NewEvent[], text: string, icon: string) => {
       try {
         const created = await store.addEvents(events);
+        track('action', `${events[0].type}:${events[0].type === 'sleep' ? 'start' : (events[0].subtype ?? '')}|${events.length}`);
         toast({
           text,
           icon,
           undo: async () => {
             await Promise.all(created.map((e) => store.deleteEvent(e.id)));
+            track('undo', events[0].type);
             toast({ text: 'בוטל', icon: '↩️' });
           },
         });
@@ -67,11 +70,13 @@ export function useActions() {
       if (ends.length) {
         const t = now();
         await Promise.all(ends.map((e) => store.updateEvent(e.id, { ended_at: t })));
+        track('action', `sleep:wake|${ends.length}`);
         toast({
           text: kids.length === 1 ? `${kids[0].name} ${childWord(kids[0], 'התעורר', 'התעוררה')}` : 'התעוררו',
           icon: '🌤️',
           undo: async () => {
             await Promise.all(ends.map((e) => store.updateEvent(e.id, { ended_at: null })));
+            track('undo', 'sleep');
           },
         });
       }

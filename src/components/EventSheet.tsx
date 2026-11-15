@@ -6,6 +6,7 @@ import type { Child, DayEvent, EventType, NewEvent } from '../lib/types';
 import { DIAPER_LABEL, FEED_LABEL, MOODS, PORTION_LABEL, TEXTURES, hhmm, type IconKey } from '../lib/util';
 import { Bubble, EvIcon } from './Icon';
 import { Trash2 } from 'lucide-react';
+import { track } from '../lib/assistant/usage';
 
 const TYPE_TITLE: Record<EventType, [IconKey, string]> = {
   diaper: ['pee', 'החלפת חיתול'],
@@ -76,6 +77,7 @@ export default function EventSheet({
       if (type === 'note') clean.mood = subtype ?? undefined;
       if (existing) {
         await store.updateEvent(existing.id, { subtype, data: clean, started_at, ended_at: type === 'sleep' ? ended_at : null });
+        track('action', `edit:${type}|1`);
         toast({ text: 'עודכן', icon: '✅' });
       } else {
         const list: NewEvent[] = kids.map((c) => ({
@@ -87,10 +89,11 @@ export default function EventSheet({
           ended_at: type === 'sleep' ? ended_at : null,
         }));
         const created = await store.addEvents(list);
+        track('action', `${type}:${subtype ?? ''}|${list.length}`);
         toast({
           text: kids.length === 1 ? `נשמר ל${kids[0].name}` : `נשמר ל-${kids.length} ילדים`,
           icon: '✅',
-          undo: () => Promise.all(created.map((e) => store.deleteEvent(e.id))).then(() => undefined),
+          undo: () => Promise.all(created.map((e) => store.deleteEvent(e.id))).then(() => track('undo', type)),
         });
       }
       onClose();
@@ -105,6 +108,7 @@ export default function EventSheet({
     if (!existing) return;
     const copy = existing;
     await store.deleteEvent(existing.id);
+    track('action', `delete:${copy.type}|1`);
     toast({
       text: 'נמחק',
       icon: '🗑️',

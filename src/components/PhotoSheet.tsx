@@ -6,6 +6,7 @@ import { useToast } from './Toast';
 import { Camera, ImagePlus, X } from 'lucide-react';
 import { Bubble } from './Icon';
 import { compressImage } from '../lib/util';
+import { track } from '../lib/assistant/usage';
 
 /** Pick/take photos and tag children. `preselect` children are tagged by default. */
 export default function PhotoSheet({ open, onClose, preselect = [] }: { open: boolean; onClose: () => void; preselect?: string[] }) {
@@ -42,6 +43,7 @@ export default function PhotoSheet({ open, onClose, preselect = [] }: { open: bo
     setBusy(true);
     try {
       for (const f of files) await store.addPhoto(f.blob, tags, caption.trim());
+      track('action', `photo:${files.length}|${tags.length || 1}`);
       toast({ text: files.length === 1 ? 'התמונה נשמרה' : `${files.length} תמונות נשמרו`, icon: '📷' });
       onClose();
     } catch (e) {

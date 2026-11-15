@@ -44,6 +44,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             )}
             {toast.undo && (
               <button
+                data-help="undo"
                 className="font-bold rounded-xl bg-white/15 px-3 py-1.5"
                 onClick={async () => {
                   setToast(null);

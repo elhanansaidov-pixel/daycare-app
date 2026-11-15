@@ -1,6 +1,11 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { CalendarCheck, House, Images, MessageCircleHeart, Settings, TriangleAlert, type LucideIcon } from 'lucide-react';
+import { useEffect } from 'react';
 import { useData } from '../hooks/useData';
+import { pilotOn } from '../lib/pilots';
+import { usePilotsVersion } from './Pilot';
+import { track } from '../lib/assistant/usage';
+import Assistant from './assistant/Assistant';
 
 const TABS: { to: string; icon: LucideIcon; label: string; end?: boolean }[] = [
   { to: '/', icon: House, label: 'היום', end: true },
@@ -13,6 +18,10 @@ const TABS: { to: string; icon: LucideIcon; label: string; end?: boolean }[] = [
 export default function Layout() {
   const { error, store } = useData();
   const loc = useLocation();
+  usePilotsVersion();
+  useEffect(() => {
+    track('screen', loc.pathname.startsWith('/child/') ? '/child' : loc.pathname);
+  }, [loc.pathname]);
   return (
     <div className="min-h-screen pb-28">
       {error && (
@@ -26,6 +35,7 @@ export default function Layout() {
       <div key={loc.pathname} className="anim-rise">
         <Outlet />
       </div>
+      {pilotOn('U2') && <Assistant />}
       <nav className="fixed bottom-0 inset-x-0 z-40 bg-card/90 backdrop-blur-xl border-t border-line/80 safe-bottom">
         <ul className="grid grid-cols-5 max-w-3xl mx-auto px-1">
           {TABS.map(({ to, icon: I, label, end }) => (
@@ -33,6 +43,7 @@ export default function Layout() {
               <NavLink
                 to={to}
                 end={end}
+                data-help={`nav-${to.slice(1) || 'home'}`}
                 className={({ isActive }) =>
                   `flex flex-col items-center gap-1 pt-2 pb-1 min-h-[60px] text-[11px] font-semibold transition-colors ${isActive ? 'text-brand' : 'text-muted'}`
                 }
