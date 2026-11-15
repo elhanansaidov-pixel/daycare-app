@@ -14,6 +14,7 @@ import { describe } from '../components/Timeline';
 import { signOut } from '../lib/auth';
 import { AlarmClock, ChevronLeft, Cloud, Download, Eye, Monitor as MonitorSmartphone, Moon, Palette, Plus, Settings as SettingsIcon, Smartphone, Sun, Trash2 } from 'lucide-react';
 import { getThemePref, setThemePref, type ThemePref } from '../lib/theme';
+import { PilotsSection } from '../components/Pilot';
 import { supabase } from '../lib/supabase';
 
 const DAY_NAMES = ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳'];
@@ -102,6 +103,8 @@ export default function Settings() {
             ))}
           </div>
         </section>
+
+        <PilotsSection />
 
         <section className="card p-4">
           <div className="flex items-center justify-between mb-2">

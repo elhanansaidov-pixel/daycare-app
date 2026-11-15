@@ -18,6 +18,7 @@ import { createSupabaseStore } from './lib/supabaseStore';
 import { getRole, redeemInvite, setPendingInvite, takePendingInvite, type Role } from './lib/auth';
 import { useReminderTicker } from './hooks/useAlerts';
 import Logo from './components/Logo';
+import { setAdmin } from './lib/pilots';
 
 function ReminderRunner() {
   const toast = useToast();
@@ -80,6 +81,7 @@ function CloudApp() {
       setRole(null);
       return;
     }
+    setAdmin(session.user.email);
     (async () => {
       const r = await getRole();
       const code = takePendingInvite();
@@ -107,6 +109,7 @@ function CloudApp() {
 }
 
 function LocalApp() {
+  setAdmin('local');
   const store = useMemo(() => createLocalStore(), []);
   return (
     <DataProvider store={store}>
