@@ -12,12 +12,15 @@ export default function Avatar({
   ring = true,
   state = 'idle',
   look: lookOverride,
+  party = false,
 }: {
   child: AvatarChild;
   size?: number;
   ring?: boolean;
   state?: AvatarState;
   look?: Look;
+  /** U2: party hat on the birthday */
+  party?: boolean;
 }) {
   const look = lookOverride ?? lookOf(child);
   const uid = useId().replace(/:/g, '');
@@ -50,6 +53,7 @@ export default function Avatar({
           <rect width="120" height="120" fill="rgb(var(--card))" />
           <rect width="120" height="120" fill={`url(#g${uid})`} />
           <Kid look={look} state={state} small={small} uid={uid} />
+          {party && <PartyHat />}
         </g>
       </svg>
     </div>
@@ -607,4 +611,17 @@ function ToyProp({ toy, skin, skinDark }: { toy: Toy; skin: string; skinDark: st
     default:
       return null;
   }
+}
+
+function PartyHat() {
+  return (
+    <g data-testid="party-hat" transform="rotate(14 74 22)">
+      <path d="M58 40 L74 2 L90 40 Z" fill="#FF7A9C" stroke="#fff" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M64.5 25 L83.5 25 M61.5 33 L86.5 33" stroke="#FFD24D" strokeWidth="4" strokeLinecap="round" />
+      <circle cx="68" cy="16" r="2" fill="#7CC6F5" />
+      <circle cx="80" cy="30" r="2" fill="#7CC6F5" />
+      <circle cx="74" cy="3" r="5.5" fill="#FFD24D" stroke="#fff" strokeWidth="1.5" />
+      <path d="M56 41 Q74 46 92 41" stroke="#fff" strokeWidth="3" fill="none" strokeLinecap="round" />
+    </g>
+  );
 }

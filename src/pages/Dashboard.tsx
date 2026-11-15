@@ -16,6 +16,8 @@ import { APP_NAME } from '../lib/brand';
 import { AlarmClock, Baby, Columns3, LayoutGrid, ListChecks } from 'lucide-react';
 import type { Child, EventType } from '../lib/types';
 import { presence, type IconKey } from '../lib/util';
+import { pilotOn } from '../lib/pilots';
+import BirthdayStrip from '../components/BirthdayStrip';
 
 function greeting() {
   const h = new Date().getHours();
@@ -71,6 +73,7 @@ export default function Dashboard() {
       </header>
 
       <div className="max-w-6xl mx-auto px-4 space-y-3">
+        {pilotOn('U2') && <BirthdayStrip children={children} />}
         {overdue.length > 0 && (
           <div className="rounded-3xl bg-danger/10 border border-danger/20 p-3 space-y-1 anim-pop">
             {overdue.map((o) => (

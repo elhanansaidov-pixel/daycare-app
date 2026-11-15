@@ -6,6 +6,8 @@ import { EvIcon } from './Icon';
 import { avatarState, ageLabel, clockDuration, durationLabel, lastOf, openSleep, presence, childWord, hhmm, type IconKey } from '../lib/util';
 import { useNow } from '../hooks/useData';
 import { useActions } from '../hooks/useActions';
+import { pilotOn } from '../lib/pilots';
+import { isBirthday } from '../lib/birthday';
 
 export default function ChildCard({
   child,
@@ -55,7 +57,7 @@ export default function ChildCard({
           </div>
         )}
         <Link to={`/child/${child.id}`} className="flex items-center gap-3 flex-1 min-w-0" data-help="child-link" onClick={(e) => selectMode && e.preventDefault()}>
-          <Avatar child={child} size={58} state={avatarState(events, now)} />
+          <Avatar child={child} size={58} state={avatarState(events, now)} party={pilotOn('U2') && isBirthday(child)} />
           <div className="min-w-0">
             <h3 className="text-xl font-bold leading-tight truncate">{child.name}</h3>
             <p className="text-sm text-muted">{ageLabel(child.birth_date) || (child.gender === 'girl' ? 'בת' : 'בן')}</p>

@@ -10,6 +10,7 @@ import PhotoSheet from '../components/PhotoSheet';
 import ChildForm from '../components/ChildForm';
 import SuppliesCard from '../components/SuppliesCard';
 import { pilotOn } from '../lib/pilots';
+import { isBirthday } from '../lib/birthday';
 import { usePilotsVersion } from '../components/Pilot';
 import { ageLabel, avatarState, telLink, waLink } from '../lib/util';
 import { buildSummary } from '../lib/summary';
@@ -41,7 +42,7 @@ export default function ChildPage() {
           <ArrowRight size={20} />
         </Link>
         <div className="flex items-center gap-4 mt-3">
-          <Avatar child={child} size={88} state={isToday(day) ? avatarState(evs) : 'idle'} />
+          <Avatar child={child} size={88} state={isToday(day) ? avatarState(evs) : 'idle'} party={pilotOn('U2') && isToday(day) && isBirthday(child)} />
           <div className="flex-1 min-w-0">
             <h1 className="text-3xl font-extrabold tracking-tight">{child.name}</h1>
             <p className="text-muted">{ageLabel(child.birth_date) || 'הוסיפו תאריך לידה בכרטיס'}</p>
