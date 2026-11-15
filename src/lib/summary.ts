@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import { he } from 'date-fns/locale';
 import type { Child, DayEvent, Photo, Settings } from './types';
 import { pilotOn } from './pilots';
+import { birthdayTitle, nextBirthday } from './birthday';
 import { DIAPER_ICON, DIAPER_LABEL, FEED_ICON, FEED_LABEL, durationLabel, hhmm, moodFor, portionFor } from './util';
 
 export function buildSummary(c: Child, events: DayEvent[], photos: Photo[], day: Date, s: Settings): string {
@@ -60,6 +61,9 @@ export function buildSummary(c: Child, events: DayEvent[], photos: Photo[], day:
   if (pics) L.push('', `📷 צולמו היום ${pics === 1 ? 'תמונה אחת' : `${pics} תמונות`}`);
 
   if (ev.length === 0 && !pics) L.push('', 'לא תועדו פעילויות היום.');
+
+  const bd = pilotOn('U2') ? nextBirthday(c.birth_date, day) : null;
+  if (bd && bd.days === 0) L.push('', `🎂 *היום חגגנו ${birthdayTitle(c, bd.age)}!* מזל טוב 🎉`);
 
   const need = pilotOn('U1') ? (c.supplies ?? []) : [];
   if (need.length) {

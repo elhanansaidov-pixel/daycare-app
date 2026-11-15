@@ -79,6 +79,25 @@ const check = (ok, name) => {
     await sleep(300);
     check((await page.getByTestId('tip-bubble').getByText('לכמה ילדים').count()) === 1, 'U4: multi-select tip after 5 separate logs');
 
+    // U2 pilot: birthdays (today → festive card + party hat, within a week → reminder)
+    await page.evaluate(() => {
+      const kids = JSON.parse(localStorage.getItem('daycare.v1.children'));
+      const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      const t = new Date();
+      kids[0].birth_date = ymd(new Date(t.getFullYear() - 2, t.getMonth(), t.getDate()));
+      kids[1].birth_date = ymd(new Date(t.getFullYear() - 3, t.getMonth(), t.getDate() + 3));
+      localStorage.setItem('daycare.v1.children', JSON.stringify(kids));
+    });
+    await page.goto(URL + '#/');
+    await page.reload();
+    await page.waitForSelector('article');
+    check((await page.getByTestId('birthday-today').getByText('יום הולדת שנתיים').count()) === 1, 'U2: birthday card shown on the day');
+    check((await page.locator('article [data-testid="party-hat"]').count()) === 1, 'U2: party hat on the birthday child');
+    check((await page.getByTestId('birthday-soon').getByText('בעוד 3 ימים').count()) === 1, 'U2: upcoming birthday reminder');
+    await page.goto(URL + '#/parent');
+    await page.waitForTimeout(500);
+    check((await page.getByTestId('parent-birthday').count()) === 1, 'U2: parents see the birthday greeting');
+
     await page.goto(URL + '#/settings');
     await page.waitForSelector('text=פיילוטים');
     check(true, 'admin sees pilots section in settings');

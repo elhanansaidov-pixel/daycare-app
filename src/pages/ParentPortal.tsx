@@ -7,6 +7,7 @@ import Timeline from '../components/Timeline';
 import DayNav from '../components/DayNav';
 import SuppliesCard from '../components/SuppliesCard';
 import { pilotOn } from '../lib/pilots';
+import { birthdayTitle, isBirthday, nextBirthday } from '../lib/birthday';
 import { PhotoGrid } from './Gallery';
 import { ageLabel, avatarState, childWord, clockDuration, durationLabel, lastOf, openSleep, presence } from '../lib/util';
 import { signOut } from '../lib/auth';
@@ -77,7 +78,7 @@ export default function ParentPortal({ preview }: { preview?: boolean }) {
         )}
         {child && (
           <div className="flex items-center gap-4 mt-5 anim-pop" key={child.id}>
-            <Avatar child={child} size={92} state={isToday(day) ? avatarState(ev, now) : 'idle'} />
+            <Avatar child={child} size={92} state={isToday(day) ? avatarState(ev, now) : 'idle'} party={pilotOn('U2') && isToday(day) && isBirthday(child)} />
             <div>
               <h1 className="text-3xl font-extrabold tracking-tight">{child.name}</h1>
               <p className="text-muted">{ageLabel(child.birth_date)}</p>
@@ -89,6 +90,13 @@ export default function ParentPortal({ preview }: { preview?: boolean }) {
 
       {child && (
         <main className="max-w-2xl mx-auto px-4 space-y-3">
+          {pilotOn('U2') && isToday(day) && isBirthday(child) && (
+            <div data-testid="parent-birthday" className="rounded-3xl p-4 text-center anim-pop" style={{ background: `linear-gradient(135deg, ${child.color}55, #FFE08A88)` }}>
+              <p className="text-3xl leading-none mb-1">🎉🎂🎈</p>
+              <p className="text-lg font-extrabold">היום {birthdayTitle(child, nextBirthday(child.birth_date)!.age)}!</p>
+              <p className="text-sm">מזל טוב מכל המשפחתון 💛</p>
+            </div>
+          )}
           {isToday(day) && (
             <div className="grid grid-cols-3 gap-2 text-center">
               <div className={`card p-3 anim-rise ${pres === 'in' ? '' : 'opacity-75'}`}>
