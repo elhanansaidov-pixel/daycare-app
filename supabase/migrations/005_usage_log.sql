@@ -1,5 +1,5 @@
 -- ============================================================
---  U2: "העוזרת של ברכה" – usage log + learned profile
+--  U4: "העוזרת של ברכה" – usage log + learned profile
 --  usage_log:        what the caregiver does in the app (screens, actions, undo, help questions, tours).
 --                    No child names or event content – only action types and counts.
 --  assistant_profile: what the assistant learned (one row per user) + weekly snapshots

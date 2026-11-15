@@ -1,4 +1,4 @@
-// U2 proactive tips: simple rules over today's data and the learned profile.
+// U4 proactive tips: simple rules over today's data and the learned profile.
 import type { Child, DayEvent } from '../types';
 import { presence } from '../util';
 import { parseAction, type Profile } from './profile';

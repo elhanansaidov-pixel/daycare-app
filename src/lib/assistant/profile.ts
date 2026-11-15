@@ -1,4 +1,4 @@
-// U2 learned profile: what the assistant learned about how she uses the app.
+// U4 learned profile: what the assistant learned about how she uses the app.
 // Computed from the local usage log; synced to assistant_profile so it is the same on every device
 // and the weekly summary can compare it week over week.
 import type { SupabaseClient } from '@supabase/supabase-js';

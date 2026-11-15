@@ -22,7 +22,7 @@ function useUsageVersion() {
   return v;
 }
 
-/** U2: floating help button + tip bubble + help sheet + step-by-step guides. */
+/** U4: floating help button + tip bubble + help sheet + step-by-step guides. */
 export default function Assistant() {
   const { children, today, settings } = useData();
   const nav = useNavigate();

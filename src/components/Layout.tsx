@@ -35,7 +35,7 @@ export default function Layout() {
       <div key={loc.pathname} className="anim-rise">
         <Outlet />
       </div>
-      {pilotOn('U2') && <Assistant />}
+      {pilotOn('U4') && <Assistant />}
       <nav className="fixed bottom-0 inset-x-0 z-40 bg-card/90 backdrop-blur-xl border-t border-line/80 safe-bottom">
         <ul className="grid grid-cols-5 max-w-3xl mx-auto px-1">
           {TABS.map(({ to, icon: I, label, end }) => (

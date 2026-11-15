@@ -51,37 +51,37 @@ const check = (ok, name) => {
     await page.waitForTimeout(500);
     check((await page.getByText('מה להביא מחר').count()) === 1, 'U1: parent portal shows what to bring');
 
-    // U2 pilot: the assistant ("העוזרת של ברכה")
+    // U4 pilot: the assistant ("העוזרת של ברכה")
     await page.goto(URL + '#/');
     await page.waitForSelector('article');
     const help = page.getByRole('button', { name: 'עזרה' });
-    check((await help.count()) === 1, 'U2: help button shown while pilot is on');
-    check((await page.getByTestId('tip-bubble').getByText('אני העוזרת שלך').count()) === 1, 'U2: welcome tip shown on first visit');
+    check((await help.count()) === 1, 'U4: help button shown while pilot is on');
+    check((await page.getByTestId('tip-bubble').getByText('אני העוזרת שלך').count()) === 1, 'U4: welcome tip shown on first visit');
     await help.click();
     await page.getByLabel('שאלה לעוזרת').fill('טעיתי');
     await sleep(200);
-    check((await page.getByTestId('faq-results').getByText('לחצתי בטעות, איך מבטלים?').count()) === 1, 'U2: "טעיתי" finds the undo answer');
+    check((await page.getByTestId('faq-results').getByText('לחצתי בטעות, איך מבטלים?').count()) === 1, 'U4: "טעיתי" finds the undo answer');
     await page.getByLabel('שאלה לעוזרת').fill('מתי יש חנוכה');
     await sleep(1800);
-    check((await page.getByTestId('faq-miss').count()) === 1, 'U2: unknown question shows the "sent to Elhanan" note');
+    check((await page.getByTestId('faq-miss').count()) === 1, 'U4: unknown question shows the "sent to Elhanan" note');
     const usage = await page.evaluate(() => JSON.parse(localStorage.getItem('daycare.usage') || '[]'));
-    check(usage.some((e) => e.kind === 'help_miss' && e.detail === 'מתי יש חנוכה') && usage.some((e) => e.kind === 'screen'), 'U2: usage log stored locally');
+    check(usage.some((e) => e.kind === 'help_miss' && e.detail === 'מתי יש חנוכה') && usage.some((e) => e.kind === 'screen'), 'U4: usage log stored locally');
     await page.getByLabel('שאלה לעוזרת').fill('');
     await page.getByRole('button', { name: 'לסמן הגעה ואיסוף' }).click();
     await page.getByTestId('tour').getByText('שלב 1 מתוך 3').waitFor({ timeout: 3000 });
     await page.locator('[data-help="arrive"]').first().click();
-    await page.getByTestId('tour').getByText('שלב 2 מתוך 3').waitFor({ timeout: 3000 }).then(() => check(true, 'U2: tour advances when the highlighted button is tapped'), () => check(false, 'U2: tour advances when the highlighted button is tapped'));
+    await page.getByTestId('tour').getByText('שלב 2 מתוך 3').waitFor({ timeout: 3000 }).then(() => check(true, 'U4: tour advances when the highlighted button is tapped'), () => check(false, 'U4: tour advances when the highlighted button is tapped'));
     await page.getByTestId('tour').getByRole('button', { name: 'יציאה' }).click();
     for (let i = 0; i < 5; i++) {
       await page.locator('[data-help="quick-pee"]').nth(i % 3).click();
       await sleep(150);
     }
     await sleep(300);
-    check((await page.getByTestId('tip-bubble').getByText('לכמה ילדים').count()) === 1, 'U2: multi-select tip after 5 separate logs');
-    await page.evaluate(() => localStorage.setItem('daycare.pilotsOff', '["U2"]'));
+    check((await page.getByTestId('tip-bubble').getByText('לכמה ילדים').count()) === 1, 'U4: multi-select tip after 5 separate logs');
+    await page.evaluate(() => localStorage.setItem('daycare.pilotsOff', '["U4"]'));
     await page.reload();
     await page.waitForSelector('article');
-    check((await page.getByRole('button', { name: 'עזרה' }).count()) === 0, 'U2: help button hidden when pilot is off');
+    check((await page.getByRole('button', { name: 'עזרה' }).count()) === 0, 'U4: help button hidden when pilot is off');
     await page.evaluate(() => localStorage.removeItem('daycare.pilotsOff'));
 
     await page.goto(URL + '#/settings');

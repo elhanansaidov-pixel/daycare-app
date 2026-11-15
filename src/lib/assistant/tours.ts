@@ -1,4 +1,4 @@
-// U2 step-by-step guides. Each step highlights one element (CSS selector, usually [data-help=…]).
+// U4 step-by-step guides. Each step highlights one element (CSS selector, usually [data-help=…]).
 // `path` navigates first; `waitClick` advances by itself when she taps the highlighted element.
 
 export interface TourStep {

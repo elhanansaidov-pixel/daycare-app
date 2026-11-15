@@ -1,4 +1,4 @@
-// U2 question bank. Answers address Bracha in the feminine. `keys` are matched loosely (see search()).
+// U4 question bank. Answers address Bracha in the feminine. `keys` are matched loosely (see search()).
 
 export interface Faq {
   id: string;
