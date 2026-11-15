@@ -43,9 +43,14 @@ export function createSupabaseStore(sb: SupabaseClient): Store {
       return check(await sb.from('children').select('*').order('sort')) as Child[];
     },
     async saveChild(c) {
-      const r = check(await sb.from('children').upsert(c).select().single());
+      const { supplies, ...row } = c;
+      const r = check(await sb.from('children').upsert(row).select().single());
       emit();
       return r as Child;
+    },
+    async saveSupplies(childId, items) {
+      check(await sb.from('children').update({ supplies: items }).eq('id', childId));
+      emit();
     },
     async listGuardians() {
       return check(await sb.from('guardians').select('*')) as Guardian[];

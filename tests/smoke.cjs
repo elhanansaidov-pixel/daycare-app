@@ -41,6 +41,16 @@ const check = (ok, name) => {
     await page.waitForSelector('ol');
     check((await page.locator('ol li').count()) >= 2, 'child timeline lists today events');
 
+    // U1 pilot: "מה חסר" list on the child page, shown read-only in the parent portal
+    await page.getByRole('button', { name: 'הוספת פריט חסר' }).click();
+    await page.locator('[role=dialog] button', { hasText: 'חיתולים' }).click();
+    await sleep(300);
+    await page.locator('[role=dialog] button[aria-label="סגירה"]').click();
+    check((await page.getByRole('button', { name: 'חיתולים הגיע' }).count()) === 1, 'U1: supply item added on child page');
+    await page.goto(URL + '#/parent');
+    await page.waitForTimeout(500);
+    check((await page.getByText('מה להביא מחר').count()) === 1, 'U1: parent portal shows what to bring');
+
     await page.goto(URL + '#/settings');
     await page.waitForSelector('text=פיילוטים');
     check(true, 'admin sees pilots section in settings');

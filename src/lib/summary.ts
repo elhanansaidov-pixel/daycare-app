@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 import { he } from 'date-fns/locale';
 import type { Child, DayEvent, Photo, Settings } from './types';
+import { pilotOn } from './pilots';
 import { DIAPER_ICON, DIAPER_LABEL, FEED_ICON, FEED_LABEL, durationLabel, hhmm, moodFor, portionFor } from './util';
 
 export function buildSummary(c: Child, events: DayEvent[], photos: Photo[], day: Date, s: Settings): string {
@@ -59,6 +60,12 @@ export function buildSummary(c: Child, events: DayEvent[], photos: Photo[], day:
   if (pics) L.push('', `📷 צולמו היום ${pics === 1 ? 'תמונה אחת' : `${pics} תמונות`}`);
 
   if (ev.length === 0 && !pics) L.push('', 'לא תועדו פעילויות היום.');
+
+  const need = pilotOn('U1') ? (c.supplies ?? []) : [];
+  if (need.length) {
+    L.push('', '🛍️ *מה להביא מחר*');
+    for (const it of need) L.push(`• ${it.text}`);
+  }
   L.push('', `באהבה${s.caregiver_name ? `, ${s.caregiver_name}` : ''} 💛${s.daycare_name ? ` · ${s.daycare_name}` : ''}`);
   return L.join('\n');
 }

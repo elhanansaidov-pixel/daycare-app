@@ -1,4 +1,4 @@
-import type { Child, DayEvent, Guardian, NewEvent, Photo, Reminder, Settings } from './types';
+import type { Child, DayEvent, Guardian, NewEvent, Photo, Reminder, Settings, SupplyItem } from './types';
 
 export interface Store {
   mode: 'local' | 'cloud';
@@ -6,7 +6,10 @@ export interface Store {
   saveSettings(s: Settings): Promise<void>;
 
   listChildren(): Promise<Child[]>;
+  /** Saves the child's details. Never touches `supplies` (see saveSupplies). */
   saveChild(c: Child): Promise<Child>;
+  /** Replaces the "מה חסר" list of one child. */
+  saveSupplies(childId: string, items: SupplyItem[]): Promise<void>;
 
   listGuardians(): Promise<Guardian[]>;
   saveGuardian(g: Guardian): Promise<Guardian>;

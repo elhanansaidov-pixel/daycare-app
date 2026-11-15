@@ -5,6 +5,8 @@ import { useData, useDay, useNow } from '../hooks/useData';
 import Avatar from '../components/Avatar';
 import Timeline from '../components/Timeline';
 import DayNav from '../components/DayNav';
+import SuppliesCard from '../components/SuppliesCard';
+import { pilotOn } from '../lib/pilots';
 import { PhotoGrid } from './Gallery';
 import { ageLabel, avatarState, childWord, clockDuration, durationLabel, lastOf, openSleep, presence } from '../lib/util';
 import { signOut } from '../lib/auth';
@@ -108,6 +110,8 @@ export default function ParentPortal({ preview }: { preview?: boolean }) {
               </div>
             </div>
           )}
+
+          {pilotOn('U1') && <SuppliesCard child={child} readOnly />}
 
           <div className="segmented">
             {(

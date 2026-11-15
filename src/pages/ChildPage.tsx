@@ -8,6 +8,9 @@ import DayNav from '../components/DayNav';
 import EventSheet from '../components/EventSheet';
 import PhotoSheet from '../components/PhotoSheet';
 import ChildForm from '../components/ChildForm';
+import SuppliesCard from '../components/SuppliesCard';
+import { pilotOn } from '../lib/pilots';
+import { usePilotsVersion } from '../components/Pilot';
 import { ageLabel, avatarState, telLink, waLink } from '../lib/util';
 import { buildSummary } from '../lib/summary';
 import type { EventType } from '../lib/types';
@@ -18,6 +21,7 @@ import { ArrowRight, BookOpen, IdCard, MessageCircle, Phone, Pill, Pin, Triangle
 export default function ChildPage() {
   const { id } = useParams();
   const { childById, guardians, settings } = useData();
+  usePilotsVersion();
   const [params, setParams] = useSearchParams();
   const tab = params.get('tab') === 'profile' ? 'profile' : 'log';
   const [day, setDay] = useState(new Date());
@@ -107,6 +111,7 @@ export default function ChildPage() {
                 <Pin size={16} className="text-brand shrink-0 mt-0.5" /> {child.notes}
               </p>
             )}
+            {pilotOn('U1') && <SuppliesCard child={child} />}
             <div className="card p-3">
               <Timeline child={child} events={evs} photos={photos} day={day} emptyText={isToday(day) ? 'עוד לא תועד כלום היום' : 'אין תיעוד ליום הזה'} />
             </div>
