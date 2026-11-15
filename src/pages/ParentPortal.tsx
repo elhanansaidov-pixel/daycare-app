@@ -120,7 +120,7 @@ export default function ParentPortal({ preview }: { preview?: boolean }) {
             </div>
           )}
 
-          {pilotOn('U1') && <SuppliesCard child={child} readOnly />}
+          <SuppliesCard child={child} readOnly />
           {pilotOn('U3') && <ClosedDaysForParents />}
 
           <div className="segmented">

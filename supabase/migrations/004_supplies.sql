@@ -3,6 +3,7 @@
 --  Stored as children.supplies: [{ "id", "text", "added_at" }]
 --  Staff write it (children_write), parents read it (children_read).
 --
+--  (Released 16/11/2026: the guard below was dropped by 006_release_u1.sql.)
 --  PILOT: while U1 is in pilot, only the admin account may change the list.
 --  On release, run:  drop trigger if exists supplies_pilot_guard on public.children;
 --                    drop function if exists public.supplies_pilot_guard();

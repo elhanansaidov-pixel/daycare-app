@@ -41,7 +41,7 @@ const check = (ok, name) => {
     await page.waitForSelector('ol');
     check((await page.locator('ol li').count()) >= 2, 'child timeline lists today events');
 
-    // U1 pilot: "מה חסר" list on the child page, shown read-only in the parent portal
+    // U1: "מה חסר" list on the child page, shown read-only in the parent portal
     await page.getByRole('button', { name: 'הוספת פריט חסר' }).click();
     await page.locator('[role=dialog] button', { hasText: 'חיתולים' }).click();
     await sleep(300);

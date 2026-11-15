@@ -69,7 +69,7 @@ export function buildSummary(c: Child, events: DayEvent[], photos: Photo[], day:
   const off = pilotOn('U3') ? closedOn(s, nextWorkday(day)) : undefined;
   if (off) L.push('', `📅 *תזכורת:* ${nextWorkday(day).getDay() === 0 ? 'ביום ראשון' : 'מחר'} המשפחתון סגור${off.note ? ` (${off.note})` : ''}.`);
 
-  const need = pilotOn('U1') ? (c.supplies ?? []) : [];
+  const need = c.supplies ?? [];
   if (need.length) {
     L.push('', '🛍️ *מה להביא מחר*');
     for (const it of need) L.push(`• ${it.text}`);

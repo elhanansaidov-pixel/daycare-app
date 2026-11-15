@@ -5,7 +5,6 @@ export const ADMIN_EMAILS = ['elhanansaidov@gmail.com'];
 
 /** [id, icon, name] */
 export const PILOTS: [string, string, string][] = [
-  ['U1', '🛍️', 'מה חסר'],
   ['U2', '🎂', 'ימי הולדת'],
   ['U3', '📅', 'ימים שהמשפחתון סגור'],
 ];

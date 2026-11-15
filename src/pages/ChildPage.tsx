@@ -114,7 +114,7 @@ export default function ChildPage() {
                 <Pin size={16} className="text-brand shrink-0 mt-0.5" /> {child.notes}
               </p>
             )}
-            {pilotOn('U1') && <SuppliesCard child={child} />}
+            <SuppliesCard child={child} />
             <div className="card p-3" data-help="timeline">
               <Timeline child={child} events={evs} photos={photos} day={day} emptyText={isToday(day) ? 'עוד לא תועד כלום היום' : 'אין תיעוד ליום הזה'} />
             </div>
