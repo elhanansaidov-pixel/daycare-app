@@ -98,6 +98,27 @@ const check = (ok, name) => {
     await page.waitForTimeout(500);
     check((await page.getByTestId('parent-birthday').count()) === 1, 'U2: parents see the birthday greeting');
 
+    // U3 pilot: closed days (settings → parents' portal, dashboard banner)
+    await page.goto(URL + '#/settings');
+    await page.waitForSelector('[data-help="closed-days"]');
+    const next = await page.evaluate(() => {
+      const n = new Date();
+      n.setDate(n.getDate() + 1);
+      if (n.getDay() === 6) n.setDate(n.getDate() + 1);
+      return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+    });
+    await page.getByLabel('מתאריך').fill(next);
+    await page.getByLabel('סיבה').fill('חופשת חנוכה');
+    await page.getByRole('button', { name: 'הוספת ימים סגורים' }).click();
+    await sleep(400);
+    check((await page.getByTestId('closed-list').getByText('חופשת חנוכה').count()) === 1, 'U3: closed day saved in settings');
+    await page.goto(URL + '#/');
+    await page.waitForSelector('article');
+    check((await page.getByTestId('closed-banner').getByText('המשפחתון סגור').count()) === 1, 'U3: dashboard warns about tomorrow');
+    await page.goto(URL + '#/parent');
+    await page.waitForTimeout(500);
+    check((await page.getByTestId('parent-closed').getByText('חופשת חנוכה').count()) === 1, 'U3: parents see the closed days');
+
     await page.goto(URL + '#/settings');
     await page.waitForSelector('text=פיילוטים');
     check(true, 'admin sees pilots section in settings');

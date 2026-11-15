@@ -18,6 +18,7 @@ import type { Child, EventType } from '../lib/types';
 import { presence, type IconKey } from '../lib/util';
 import { pilotOn } from '../lib/pilots';
 import BirthdayStrip from '../components/BirthdayStrip';
+import { closedOn, nextWorkday } from '../lib/closedDays';
 
 function greeting() {
   const h = new Date().getHours();
@@ -74,6 +75,14 @@ export default function Dashboard() {
 
       <div className="max-w-6xl mx-auto px-4 space-y-3">
         {pilotOn('U2') && <BirthdayStrip children={children} />}
+        {pilotOn('U3') && (closedOn(settings, new Date()) || closedOn(settings, nextWorkday(new Date()))) && (
+          <div className="rounded-3xl bg-sunk p-3 text-sm font-medium flex items-center gap-2" data-testid="closed-banner">
+            <span className="text-xl">📅</span>
+            {closedOn(settings, new Date())
+              ? `היום המשפחתון סגור${closedOn(settings, new Date())!.note ? ` (${closedOn(settings, new Date())!.note})` : ''}.`
+              : `${nextWorkday(new Date()).getDay() === 0 ? 'ביום ראשון' : 'מחר'} המשפחתון סגור${closedOn(settings, nextWorkday(new Date()))!.note ? ` (${closedOn(settings, nextWorkday(new Date()))!.note})` : ''}. ההורים כבר רואים את זה בפורטל.`}
+          </div>
+        )}
         {overdue.length > 0 && (
           <div className="rounded-3xl bg-danger/10 border border-danger/20 p-3 space-y-1 anim-pop">
             {overdue.map((o) => (
