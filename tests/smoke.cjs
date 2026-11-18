@@ -41,6 +41,15 @@ const check = (ok, name) => {
     await page.waitForSelector('ol');
     check((await page.locator('ol li').count()) >= 2, 'child timeline lists today events');
 
+    // Regression: on a long, scrolled child page the event sheet must open on screen (not below the page).
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.getByRole('button', { name: 'אוכל' }).first().click();
+    await sleep(600);
+    const sheetBox = await page.locator('[role=dialog] [data-help="sheet"]').boundingBox();
+    check(!!sheetBox && sheetBox.y >= 0 && sheetBox.y + sheetBox.height <= 844 + 1, 'event sheet opens fully on screen on the child page');
+    await page.locator('[role=dialog] button[aria-label="סגירה"]').click();
+    await sleep(300);
+
     // U1: "מה חסר" list on the child page, shown read-only in the parent portal
     await page.getByRole('button', { name: 'הוספת פריט חסר' }).click();
     await page.locator('[role=dialog] button', { hasText: 'חיתולים' }).click();

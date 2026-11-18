@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 export default function Sheet({
@@ -26,7 +27,9 @@ export default function Sheet({
     };
   }, [open, onClose]);
   if (!open) return null;
-  return (
+  // Portal to <body>: an animated (transformed) ancestor would otherwise become the containing block of this
+  // fixed overlay and push the panel off-screen on long pages.
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center" role="dialog" aria-modal="true">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] anim-fade" onClick={onClose} />
       <div data-help="sheet" className="relative w-full sm:max-w-lg bg-card rounded-t-4xl sm:rounded-4xl shadow-lift anim-up border-t border-line/70 max-h-[92vh] flex flex-col">
@@ -44,6 +47,7 @@ export default function Sheet({
         <div className="overflow-y-auto px-5 pb-4 flex-1">{children}</div>
         {footer && <div className="px-5 pt-2 pb-4 safe-bottom border-t border-line">{footer}</div>}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

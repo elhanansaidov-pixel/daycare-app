@@ -135,7 +135,7 @@ button { touch-action: manipulation; }
 .anim-pop { animation: pop .22s cubic-bezier(.2,.8,.2,1) both; }
 .anim-up { animation: up .28s cubic-bezier(.2,.8,.2,1); }
 .anim-fade { animation: fade .2s ease-out; }
-.anim-rise { animation: rise .4s cubic-bezier(.2,.8,.2,1) both; }
+.anim-rise { animation: rise .4s cubic-bezier(.2,.8,.2,1) backwards; }
 .anim-pulse { animation: pulse-soft 2s ease-in-out infinite; }
 .anim-breathe { animation: breathe 2.4s ease-in-out infinite; }
 
