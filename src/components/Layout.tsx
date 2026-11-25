@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useData } from '../hooks/useData';
 import { track } from '../lib/assistant/usage';
 import Assistant from './assistant/Assistant';
+import { exitDemo, isDemo, resetDemo } from '../lib/demo';
 
 const TABS: { to: string; icon: LucideIcon; label: string; end?: boolean }[] = [
   { to: '/', icon: House, label: 'היום', end: true },
@@ -26,7 +27,18 @@ export default function Layout() {
           <TriangleAlert size={16} /> שגיאת חיבור: {error}
         </div>
       )}
-      {store.mode === 'local' && (
+      {isDemo && (
+        <div className="bg-sleep/20 text-ink text-center text-xs py-1.5 px-3 flex items-center justify-center gap-2 flex-wrap" data-testid="demo-banner">
+          <span className="font-semibold">🧪 מצב דמו: הכול כאן לניסיון, ולא משפיע על היומן האמיתי</span>
+          <button className="underline underline-offset-2 font-semibold" onClick={() => confirm('להתחיל את הדמו מחדש? כל מה שנרשם בדמו יימחק.') && resetDemo()}>
+            איפוס
+          </button>
+          <button className="underline underline-offset-2 font-semibold" onClick={exitDemo}>
+            יציאה
+          </button>
+        </div>
+      )}
+      {store.mode === 'local' && !isDemo && (
         <div className="bg-warn/15 text-ink text-center text-xs py-1.5 px-3">מצב מקומי: הנתונים נשמרים רק במכשיר הזה</div>
       )}
       <div key={loc.pathname} className="anim-rise">

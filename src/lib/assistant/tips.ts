@@ -4,6 +4,7 @@ import { presence } from '../util';
 import { parseAction, type Profile } from './profile';
 import type { UsageEntry } from './usage';
 import { tourById } from './tours';
+import { isDemo } from '../demo';
 
 export interface Tip {
   id: string;
@@ -13,8 +14,8 @@ export interface Tip {
   tour?: string;
 }
 
-const DISMISSED = 'daycare.tipsDismissed';
-const SEEN = 'daycare.assistantSeen';
+const DISMISSED = isDemo ? 'daycare.demo.tipsDismissed' : 'daycare.tipsDismissed';
+const SEEN = isDemo ? 'daycare.demo.assistantSeen' : 'daycare.assistantSeen';
 
 export function dismissedTips(): Set<string> {
   try {

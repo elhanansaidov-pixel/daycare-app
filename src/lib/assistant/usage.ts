@@ -1,6 +1,7 @@
 // U4 usage log: what the caregiver does in the app, so the assistant can learn her habits.
 // Only action types and counts are recorded – never child names or event content.
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { isDemo } from '../demo';
 
 export type UsageKind = 'screen' | 'action' | 'undo' | 'help_q' | 'help_miss' | 'tour' | 'tip';
 export interface UsageEntry {
@@ -9,7 +10,7 @@ export interface UsageEntry {
   at: number;
 }
 
-const KEY = 'daycare.usage';
+const KEY = isDemo ? 'daycare.demo.usage' : 'daycare.usage';
 const MAX = 1500;
 let sb: SupabaseClient | null = null;
 let queue: UsageEntry[] = [];
