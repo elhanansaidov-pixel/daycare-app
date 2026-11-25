@@ -128,6 +128,18 @@ const check = (ok, name) => {
     await page.waitForTimeout(500);
     check((await page.getByTestId('parent-closed').getByText('חופשת חנוכה').count()) === 1, 'U3: parents see the closed days');
 
+    // Demo mode: local sample data, separate assistant memory, banner with exit/reset
+    const demo = await browser.newPage({ viewport: { width: 390, height: 844 } });
+    demo.on('pageerror', (e) => errors.push('demo: ' + e.message));
+    await demo.goto(URL + '?demo=1#/');
+    await demo.waitForSelector('article');
+    await sleep(500);
+    check((await demo.getByTestId('demo-banner').count()) === 1, 'demo: banner shown');
+    check((await demo.locator('[data-help="arrive"]', { hasText: /נמצא|נמצאת/ }).count()) >= 4, 'demo: sample morning seeded');
+    const demoKeys = await demo.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith('daycare.demo.')));
+    check(demoKeys.includes('daycare.demo.seeded'), 'demo: uses its own storage keys');
+    await demo.close();
+
     await page.goto(URL + '#/settings');
     await page.waitForSelector('text=פיילוטים');
     check(true, 'admin sees pilots section in settings');

@@ -20,6 +20,7 @@ import { useReminderTicker } from './hooks/useAlerts';
 import Logo from './components/Logo';
 import { setAdmin } from './lib/pilots';
 import { configureUsage } from './lib/assistant/usage';
+import { isDemo, seedDemo } from './lib/demo';
 
 function ReminderRunner() {
   const toast = useToast();
@@ -58,7 +59,7 @@ function Splash() {
 // Invite links look like  …/#/join/<code>. Remember the code across the Google redirect.
 let invitedOnLoad = false;
 {
-  const m = location.hash.match(/^#\/join\/([\w-]+)/);
+  const m = isDemo ? null : location.hash.match(/^#\/join\/([\w-]+)/);
   if (m) {
     setPendingInvite(m[1]);
     invitedOnLoad = true;
@@ -112,7 +113,11 @@ function CloudApp() {
 
 function LocalApp() {
   setAdmin('local');
-  const store = useMemo(() => createLocalStore(), []);
+  const store = useMemo(() => {
+    const s = createLocalStore();
+    if (isDemo) seedDemo(s);
+    return s;
+  }, []);
   return (
     <DataProvider store={store}>
       <CaregiverApp />
@@ -123,7 +128,7 @@ function LocalApp() {
 export default function App() {
   return (
     <HashRouter>
-      <ToastProvider>{supabase ? <CloudApp /> : <LocalApp />}</ToastProvider>
+      <ToastProvider>{supabase && !isDemo ? <CloudApp /> : <LocalApp />}</ToastProvider>
     </HashRouter>
   );
 }

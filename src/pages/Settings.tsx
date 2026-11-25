@@ -16,7 +16,8 @@ import { AlarmClock, ChevronLeft, Cloud, Download, Eye, Monitor as MonitorSmartp
 import { getThemePref, setThemePref, type ThemePref } from '../lib/theme';
 import { PilotsSection } from '../components/Pilot';
 import { ClosedDaysEditor } from '../components/ClosedDays';
-import { pilotOn } from '../lib/pilots';
+import { isAdmin, pilotOn } from '../lib/pilots';
+import { demoUrl, isDemo } from '../lib/demo';
 import { supabase } from '../lib/supabase';
 
 const DAY_NAMES = ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳'];
@@ -191,6 +192,11 @@ export default function Settings() {
           <Link to="/parent" className="btn-ghost w-full">
             <Eye size={18} /> תצוגה מקדימה של פורטל ההורים
           </Link>
+          {isAdmin() && !isDemo && (
+            <a href={demoUrl()} className="btn-ghost w-full" data-testid="demo-link">
+              🧪 מצב דמו להתנסות (לא משפיע על היומן האמיתי)
+            </a>
+          )}
           {store.mode === 'cloud' ? (
             <div className="flex items-center gap-3 rounded-2xl bg-sunk p-3">
               <span className="flex-1 text-sm">
